@@ -120,6 +120,8 @@ CREATE TABLE hardware_vault.stock_alert (
 -- 13. Create Indexes
 CREATE UNIQUE INDEX idx_product_name ON hardware_vault.product (name); -- Unique index
 CREATE INDEX idx_warehouse_address ON hardware_vault.warehouse (address); -- Non-unique index
+CREATE UNIQUE INDEX idx_supplier_contact_info ON hardware_vault.supplier (contact_info); -- Unique index on supplier's contact info
+CREATE INDEX idx_product_price ON hardware_vault.product (price); -- Non-unique index on product price
 
 -- Virtual Tables (Views)
 -- 1. Products with Low Stock (Stock < 10)
@@ -157,6 +159,17 @@ GROUP BY c.name;
 
 -- Refresh Command for Materialized View
 REFRESH MATERIALIZED VIEW hardware_vault.product_summary;
+
+-- Materialized View: Product Sales Summary
+CREATE MATERIALIZED VIEW hardware_vault.product_sales_summary AS
+SELECT p.id AS product_id, p.name AS product_name, SUM(po.count) AS total_sales_quantity, SUM(po.count * po.price) AS total_revenue
+FROM hardware_vault.places_order po
+JOIN hardware_vault.product p ON po.product_id = p.id
+GROUP BY p.id, p.name;
+
+-- Refresh Command for Materialized View
+REFRESH MATERIALIZED VIEW hardware_vault.product_sales_summary;
+
 
 -- Triggers for Business Rules
 -- Rule 1: Prevent decreasing stock quantity below zero
