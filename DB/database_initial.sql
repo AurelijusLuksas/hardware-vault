@@ -253,7 +253,25 @@ CREATE TRIGGER trg_log_price_change
 AFTER UPDATE ON hardware_vault.product
 FOR EACH ROW EXECUTE FUNCTION log_price_change();
 
--- Rule 4: Stock Replenishment Alert (trigger when stock falls below 10)
+-- Rule 4: Update customer order count (trigger when new order is placed)
+CREATE OR REPLACE FUNCTION update_order_count() RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE hardware_vault.customer
+    SET order_count = (
+        SELECT COUNT(*)
+        FROM hardware_vault.places_order
+        WHERE customer_id = NEW.customer_id
+    )
+    WHERE id = NEW.customer_id;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_order_count
+AFTER INSERT OR UPDATE ON hardware_vault.places_order
+FOR EACH ROW EXECUTE FUNCTION update_order_count();
+
+-- Rule 5: Stock Replenishment Alert (trigger when stock falls below 10)
 CREATE OR REPLACE FUNCTION stock_replenishment_alert() RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.stock_quantity < 10 THEN
@@ -270,7 +288,7 @@ FOR EACH ROW EXECUTE FUNCTION stock_replenishment_alert();
 
 -- DROP TRIGGER trg_stock_replenishment_alert ON hardware_vault.has_product;
 
--- Rule 5: Calculate order revenue based on price, quantity and delivery price
+-- Rule 6: Calculate order revenue based on price, quantity and delivery price
 CREATE OR REPLACE FUNCTION calculate_order_price()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -299,7 +317,7 @@ BEFORE INSERT ON hardware_vault.places_order
 FOR EACH ROW
 EXECUTE FUNCTION calculate_order_price();
 
--- Rule 6: Stock quantity trigger
+-- Rule 7: Stock quantity trigger
 CREATE OR REPLACE FUNCTION handle_order_stock()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -354,7 +372,7 @@ BEFORE INSERT ON hardware_vault.places_order
 FOR EACH ROW
 EXECUTE FUNCTION handle_order_stock();
 
--- Rule 7: Replenish stock trigger
+-- Rule 8: Replenish stock trigger
 CREATE OR REPLACE FUNCTION replenish_stock()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -418,7 +436,7 @@ AFTER INSERT OR UPDATE ON hardware_vault.product
 FOR EACH ROW
 EXECUTE FUNCTION replenish_stock();
 
--- Rule 8: If no product, not allowed to insert specification
+-- Rule 9: If no product, not allowed to insert specification
 CREATE OR REPLACE FUNCTION check_product_exists()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -438,7 +456,7 @@ BEFORE INSERT ON hardware_vault.specification
 FOR EACH ROW
 EXECUTE FUNCTION check_product_exists();
 
--- Rule 9: Don't allow employee if no warehouse
+-- Rule 10: Don't allow employee if no warehouse
 CREATE OR REPLACE FUNCTION check_warehouse_exists()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -458,7 +476,7 @@ BEFORE INSERT ON hardware_vault.employee
 FOR EACH ROW
 EXECUTE FUNCTION check_warehouse_exists();
 
--- Rule 10: set order_count 0 for new customer
+-- Rule 11: set order_count 0 for new customer
 CREATE OR REPLACE FUNCTION set_order_count_to_zero()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -831,6 +849,9 @@ INSERT INTO hardware_vault.customer (contact_info, first_name, last_name) VALUES
 
 -- Insert test data for Places Order Table
 INSERT INTO hardware_vault.places_order (customer_id, product_id, count) VALUES
+(3, 3, 3),
+(4, 4, 4),
+(2, 10, 5),
 (1, 1, 1),
 (1, 3, 2),
 (2, 4, 5),
@@ -838,7 +859,8 @@ INSERT INTO hardware_vault.places_order (customer_id, product_id, count) VALUES
 (4, 6, 1),
 (5, 7, 2),
 (6, 8, 1),
-(7, 9, 3);
+(7, 9, 3),
+(2, 10, 5);
 
 -- Insert test data for Price Change Log Table
 INSERT INTO hardware_vault.price_change_log (product_id, old_price, new_price) VALUES
