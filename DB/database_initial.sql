@@ -1,6 +1,4 @@
 -- Drop and recreate the schema
-DROP SCHEMA IF EXISTS hardware_vault CASCADE;
-CREATE SCHEMA hardware_vault;
 
 -- 1. Category Table
 CREATE TABLE hardware_vault.category (
@@ -20,7 +18,13 @@ CREATE TABLE hardware_vault.product (
     FOREIGN KEY (category_id) REFERENCES hardware_vault.category(id)
 );
 
--- 3. Warehouse Table
+-- 3. Organization Table
+CREATE TABLE hardware_vault.organization (
+    id SERIAL PRIMARY KEY, -- Automatic identity
+    warehouse_count INTEGER DEFAULT 0 CHECK (warehouse_count >= 0) -- Default value and declarative constraint
+);
+
+-- 4. Warehouse Table
 CREATE TABLE hardware_vault.warehouse (
     id SERIAL PRIMARY KEY, -- Automatic identity
     address VARCHAR(255) UNIQUE NOT NULL,
@@ -28,22 +32,16 @@ CREATE TABLE hardware_vault.warehouse (
     FOREIGN KEY (organization_id) REFERENCES hardware_vault.organization(id)
 );
 
--- 4. Employee Table
+-- 5. Employee Table
 CREATE TABLE hardware_vault.employee (
     id SERIAL PRIMARY KEY, -- Automatic identity
     position VARCHAR(255),
     years_of_experience INTEGER CHECK (years_of_experience >= 0), -- Declarative constraint: non-negative experience
     contact_info VARCHAR(255),
-    warehouse_id INTEGER NOT NULL,
+    warehouse_id VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
     FOREIGN KEY (warehouse_id) REFERENCES hardware_vault.warehouse(address)
-);
-
--- 5. Organization Table
-CREATE TABLE hardware_vault.organization (
-    id SERIAL PRIMARY KEY, -- Automatic identity
-    warehouse_count INTEGER DEFAULT 0 CHECK (warehouse_count >= 0) -- Default value and declarative constraint
 );
 
 -- 6. Customer Table
@@ -141,7 +139,7 @@ WHERE p.stock_quantity < 10;
 
 -- 2. Suppliers by Rating (rating > 3.5)
 CREATE VIEW hardware_vault.suppliers_by_rating AS
-SELECT s.id, s.name, s.rating, s.contact_info
+SELECT s.id, s.name, s.rating, s.phone_number, s.email
 FROM hardware_vault.supplier s
 WHERE s.rating > 3.5
 ORDER BY s.rating DESC;
@@ -169,7 +167,7 @@ WHERE p.stock_quantity < 10;
 CREATE VIEW hardware_vault.lowest_delivery_price AS
 SELECT s.id, s.name, s.delivery_price, p.name AS product_name
 FROM hardware_vault.supplier s
-JOIN hardware_vault.product p ON s.product_id = p.id
+LEFT JOIN hardware_vault.product p ON s.product_id = p.id
 WHERE s.delivery_price = (SELECT MIN(delivery_price) FROM hardware_vault.supplier);
 
 -- Materialized View and Refresh
@@ -183,21 +181,24 @@ GROUP BY c.name;
 REFRESH MATERIALIZED VIEW hardware_vault.product_summary;
 
 -- Materialized View: Product Sales Summary
-CREATE MATERIALIZED VIEW hardware_vault.product_sales_summary AS
-SELECT p.id AS product_id, p.name AS product_name, SUM(po.count) AS total_sales_quantity, SUM(po.count * po.price) AS total_revenue
-FROM hardware_vault.places_order po
-JOIN hardware_vault.product p ON po.product_id = p.id
-GROUP BY p.id, p.name;
+CREATE MATERIALIZED VIEW hardware_vault.product_stock_summary AS
+SELECT p.id AS product_id, p.name AS product_name, p.stock_quantity, total_value AS stock_value
+FROM hardware_vault.product p
+JOIN (
+    SELECT id, SUM(stock_quantity * price) AS total_value
+    FROM hardware_vault.product
+    GROUP BY id
+) AS stock_value ON p.id = stock_value.id;
 
 -- Refresh Command for Materialized View
-REFRESH MATERIALIZED VIEW hardware_vault.product_sales_summary;
+REFRESH MATERIALIZED VIEW hardware_vault.product_stock_summary;
 
 -- Materialized View: All product revenue
 CREATE MATERIALIZED VIEW hardware_vault.all_product_revenue AS
 SELECT p.id AS product_id, p.name AS product_name, SUM(po.price / 1.21 ) AS total_revenue
 FROM hardware_vault.places_order po
 JOIN hardware_vault.product p ON po.product_id = p.id
-GROUP BY p.id, p.name;
+GROUP BY p.id, p.name
 ORDER BY total_revenue DESC;
 
 REFRESH MATERIALIZED VIEW hardware_vault.all_product_revenue;
@@ -257,7 +258,7 @@ CREATE OR REPLACE FUNCTION stock_replenishment_alert() RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.stock_quantity < 10 THEN
         INSERT INTO hardware_vault.stock_alert (product_id, alert_message)
-        VALUES (NEW.id, 'Stock is below 10, consider replenishing.');
+        VALUES (NEW.product_id, 'Stock is below 10, consider replenishing.');
     END IF;
     RETURN NEW;
 END;
@@ -266,6 +267,8 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_stock_replenishment_alert
 AFTER UPDATE ON hardware_vault.has_product
 FOR EACH ROW EXECUTE FUNCTION stock_replenishment_alert();
+
+-- DROP TRIGGER trg_stock_replenishment_alert ON hardware_vault.has_product;
 
 -- Rule 5: Calculate order revenue based on price, quantity and delivery price
 CREATE OR REPLACE FUNCTION calculate_order_price()
@@ -301,6 +304,7 @@ CREATE OR REPLACE FUNCTION handle_order_stock()
 RETURNS TRIGGER AS $$
 DECLARE
     total_stock INTEGER;
+    warehouse RECORD;
 BEGIN
     -- Calculate the total stock for the ordered product across all warehouses
     SELECT SUM(stock_quantity) INTO total_stock
@@ -359,10 +363,25 @@ DECLARE
     remaining_stock INTEGER;
     warehouse RECORD;
 BEGIN
+    -- For each warehouse if has_product does not exist, insert with stock_quantity 0
+    FOR warehouse IN
+        SELECT id
+        FROM hardware_vault.warehouse
+    LOOP
+        INSERT INTO hardware_vault.has_product (warehouse_id, product_id, stock_quantity)
+        SELECT warehouse.id, NEW.id, 0
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM hardware_vault.has_product
+            WHERE warehouse_id = warehouse.id
+            AND product_id = NEW.id
+        );
+    END LOOP;
+
     -- Count the number of warehouses storing this product
     SELECT COUNT(*) INTO warehouse_count
     FROM hardware_vault.has_product
-    WHERE product_id = NEW.product_id;
+    WHERE product_id = NEW.id;
 
     -- Calculate how much stock each warehouse should get
     base_allocation := NEW.stock_quantity / warehouse_count;
@@ -372,11 +391,11 @@ BEGIN
     FOR warehouse IN
         SELECT warehouse_id
         FROM hardware_vault.has_product
-        WHERE product_id = NEW.product_id
+        WHERE product_id = NEW.id
     LOOP
         -- Allocate base stock to each warehouse
         INSERT INTO hardware_vault.has_product (warehouse_id, product_id, stock_quantity)
-        VALUES (warehouse.warehouse_id, NEW.product_id, base_allocation)
+        VALUES (warehouse.warehouse_id, NEW.id, base_allocation)
         ON CONFLICT (warehouse_id, product_id) DO UPDATE
         SET stock_quantity = hardware_vault.has_product.stock_quantity + EXCLUDED.stock_quantity;
 
@@ -385,15 +404,10 @@ BEGIN
             UPDATE hardware_vault.has_product
             SET stock_quantity = stock_quantity + 1
             WHERE warehouse_id = warehouse.warehouse_id
-            AND product_id = NEW.product_id;
+            AND product_id = NEW.id;
             remaining_stock := remaining_stock - 1;
         END IF;
     END LOOP;
-
-    -- Update the total stock quantity in the product table
-    UPDATE hardware_vault.product
-    SET stock_quantity = stock_quantity + NEW.stock_quantity
-    WHERE id = NEW.product_id;
 
     RETURN NEW;
 END;
@@ -417,6 +431,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_product_exists
 BEFORE INSERT ON hardware_vault.specification
@@ -430,12 +445,13 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1
         FROM hardware_vault.warehouse
-        WHERE id = NEW.warehouse_id
+        WHERE address = NEW.warehouse_id
     ) THEN
         RAISE EXCEPTION 'Warehouse with ID % does not exist', NEW.warehouse_id;
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_warehouse_exists
 BEFORE INSERT ON hardware_vault.employee
@@ -457,8 +473,7 @@ FOR EACH ROW
 EXECUTE FUNCTION set_order_count_to_zero();
 
 -- Insert test data for Organization Table
-INSERT INTO hardware_vault.organization (warehouse_count) VALUES
-();
+INSERT INTO hardware_vault.organization DEFAULT VALUES;
 -- Insert test data for Warehouse Table
 INSERT INTO hardware_vault.warehouse (address, organization_id) VALUES
 ('123 Main St', 1),
@@ -486,7 +501,6 @@ INSERT INTO hardware_vault.category (name, description) VALUES
 
 -- Insert test data for Product Table
 INSERT INTO hardware_vault.product (category_id, name, description, price, stock_quantity) VALUES
-(1, 'Intel Core i9-12900K', '16 cores (8P + 8E) / 5.2 GHz boost. High-end performance.', 589.99, 20),
 (1, 'AMD Ryzen 9 7950X', '16 cores / 32 threads / 5.7 GHz boost. Zen 4 architecture.', 465.00, 15),
 (1, 'Intel Core i5-14600K', '14 cores (6P + 8E) / 5.3 GHz boost. Excellent gaming and productivity.', 319.00, 30),
 (1, 'AMD Ryzen 7 7700X', '8 cores / 16 threads / 4.5 GHz base clock. Great for AM5 gaming.', 259.00, 25),
@@ -546,14 +560,15 @@ INSERT INTO hardware_vault.product (category_id, name, description, price, stock
 (14, 'Cooler Master Hyper 212 Black Edition', 'Air cooler with 4 heat pipes and a 120mm fan for efficient cooling.', 39.99, 50),
 (15, 'TP-Link Archer TX3000E', 'WiFi 6 PCIe card with Bluetooth 5.0 for high-speed networking.', 79.99, 30),
 (15, 'Intel I210-T1', 'Gigabit Ethernet network card with low power consumption and high reliability.', 49.99, 50),
-(15, 'Asus XG-C100C', '10Gbps Ethernet card for high-speed networking with low latency.', 179.99, 25);
+(15, 'Asus XG-C100C', '10Gbps Ethernet card for high-speed networking with low latency.', 179.99, 25),
+(15, 'Dell X540-T2', 'Dual-port 10Gbps Ethernet card for server and workstation connectivity.', 249.99, 20);
 
 -- Insert test data for Supplier Table
 INSERT INTO hardware_vault.supplier (phone_number, email, name, rating, address, product_id, delivery_price) VALUES
-('8686865568','supplier1@example.com', 'Supplier One', 4.5, '123 Supplier St', 1, 2.78),
-('8686868686','supplier2@example.com', 'Supplier Two', 3.8, '456 Supplier St', 2, 5.15),
-('6581898455','supplier1@example.com', 'Supplier One', 4.5, '123 Supplier St', 1, 3.17),
-('6546588155','supplier2@example.com', 'Supplier Two', 3.8, '456 Supplier St', 2, 1.99);
+('8686865568','supplier1@example.com', 'Supplier One', 4.5, '123 Supplier St', 127, 2.78),
+('8686868686','supplier2@example.com', 'Supplier Two', 3.8, '456 Supplier St', 130, 5.15),
+('6581898455','supplier3@example.com', 'Supplier Three', 4.5, '1233 Supplier St', 131, 3.17),
+('6546588155','supplier4@example.com', 'Supplier Four', 3.8, '4526 Supplier St', 132, 1.99);
 
 INSERT INTO hardware_vault.specification (name, description, value, product_id) VALUES
 ('Cores', 'Number of processor cores', '16 cores (8P + 8E)', 1),
@@ -796,15 +811,18 @@ INSERT INTO hardware_vault.specification (name, description, value, product_id) 
 
 -- Insert test data for Employee Table
 INSERT INTO hardware_vault.employee (position, years_of_experience, contact_info, warehouse_id, first_name, last_name) VALUES
-('Manager', 5, 'manager@example.com', 1, 'John', 'Doe'),
-('Worker', 2, 'worker@example.com', 2, 'Jane', 'Smith');
-('Worker', 2, 'worker2@example.com', 3, 'Alice', 'Johnson');
-('Manager', 3, 'manager2@example.com', 3, 'Bob', 'Williams');
+('Manager', 5, 'manager@example.com', '123 Main St', 'John', 'Doe'),
+('Worker', 2, 'worker@example.com', '456 Elm St', 'Jane', 'Smith'),
+('Worker', 2, 'worker2@example.com', '789 Oak St', 'Alice', 'Johnson'),
+('Manager', 3, 'manager2@example.com', '789 Oak St', 'Bob', 'Williams');
 
+-- ('123 Main St', 1),
+-- ('456 Elm St', 1),
+-- ('789 Oak St', 1);
 -- Insert test data for Customer Table
 INSERT INTO hardware_vault.customer (contact_info, first_name, last_name) VALUES
 ('customer1@example.com', 'Alice', 'Johnson'),
-('customer2@example.com', 'Bob', 'Williams');
+('customer2@example.com', 'Bob', 'Williams'),
 ('customer3@example.com', 'Charlie', 'Brown'),
 ('customer4@example.com', 'David', 'Clark'),
 ('customer5@example.com', 'Eve', 'Davis'),
@@ -815,7 +833,7 @@ INSERT INTO hardware_vault.customer (contact_info, first_name, last_name) VALUES
 INSERT INTO hardware_vault.places_order (customer_id, product_id, count) VALUES
 (1, 1, 1),
 (1, 3, 2),
-(2, 4, 5);
+(2, 4, 5),
 (3, 5, 3),
 (4, 6, 1),
 (5, 7, 2),
