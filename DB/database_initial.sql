@@ -1,16 +1,17 @@
 -- Drop and recreate the schema
 -- Drop Triggers
-DROP TRIGGER IF EXISTS trg_prevent_negative_stock ON hardware_vault.has_product;
-DROP TRIGGER IF EXISTS trg_update_warehouse_count ON hardware_vault.warehouse;
-DROP TRIGGER IF EXISTS trg_log_price_change ON hardware_vault.product;
-DROP TRIGGER IF EXISTS trg_update_order_count ON hardware_vault.places_order;
-DROP TRIGGER IF EXISTS trg_stock_replenishment_alert ON hardware_vault.has_product;
-DROP TRIGGER IF EXISTS set_order_price ON hardware_vault.places_order;
-DROP TRIGGER IF EXISTS before_place_order ON hardware_vault.places_order;
-DROP TRIGGER IF EXISTS after_replenish_stock ON hardware_vault.product;
-DROP TRIGGER IF EXISTS trg_check_product_exists ON hardware_vault.specification;
-DROP TRIGGER IF EXISTS trg_check_warehouse_exists ON hardware_vault.employee;
-DROP TRIGGER IF EXISTS before_insert_customer ON hardware_vault.customer;
+DROP TRIGGER IF EXISTS trg_prevent_negative_stock ON juja0400.has_product;
+DROP TRIGGER IF EXISTS trg_update_warehouse_count ON juja0400.warehouse;
+DROP TRIGGER IF EXISTS trg_log_price_change ON juja0400.product;
+DROP TRIGGER IF EXISTS trg_update_order_count ON juja0400.places_order;
+DROP TRIGGER IF EXISTS trg_stock_replenishment_alert ON juja0400.has_product;
+DROP TRIGGER IF EXISTS set_order_price ON juja0400.places_order;
+DROP TRIGGER IF EXISTS before_place_order ON juja0400.places_order;
+DROP TRIGGER IF EXISTS after_replenish_stock ON juja0400.product;
+DROP TRIGGER IF EXISTS trg_check_product_exists ON juja0400.specification;
+DROP TRIGGER IF EXISTS trg_check_warehouse_exists ON juja0400.employee;
+DROP TRIGGER IF EXISTS before_insert_customer ON juja0400.customer;
+DROP TRIGGER IF EXISTS before_delete_product ON juja0400.product;
 
 -- Drop Functions
 DROP FUNCTION IF EXISTS prevent_negative_stock();
@@ -26,17 +27,16 @@ DROP FUNCTION IF EXISTS check_warehouse_exists();
 DROP FUNCTION IF EXISTS set_order_count_to_zero();
 
 -- Drop Materialized Views
-DROP MATERIALIZED VIEW IF EXISTS hardware_vault.product_summary;
-DROP MATERIALIZED VIEW IF EXISTS hardware_vault.product_stock_summary;
-DROP MATERIALIZED VIEW IF EXISTS hardware_vault.all_product_revenue;
+DROP MATERIALIZED VIEW IF EXISTS juja0400.product_stock_summary;
+DROP MATERIALIZED VIEW IF EXISTS juja0400.all_product_revenue;
 
 -- Drop Views
-DROP VIEW IF EXISTS hardware_vault.low_stock_products;
-DROP VIEW IF EXISTS hardware_vault.suppliers_by_rating;
-DROP VIEW IF EXISTS hardware_vault.active_products;
-DROP VIEW IF EXISTS hardware_vault.high_rated_suppliers;
-DROP VIEW IF EXISTS hardware_vault.low_stock_products_in_warehouse;
-DROP VIEW IF EXISTS hardware_vault.lowest_delivery_price;
+DROP VIEW IF EXISTS juja0400.low_stock_products;
+DROP VIEW IF EXISTS juja0400.suppliers_by_rating;
+DROP VIEW IF EXISTS juja0400.active_products;
+DROP VIEW IF EXISTS juja0400.high_rated_suppliers;
+DROP VIEW IF EXISTS juja0400.low_stock_products_in_warehouse;
+DROP VIEW IF EXISTS juja0400.lowest_delivery_price;
 
 -- Drop Indexes
 DROP INDEX IF EXISTS idx_employee_fullname;
@@ -50,222 +50,214 @@ DROP INDEX IF EXISTS idx_supplier_rating;
 DROP INDEX IF EXISTS idx_product_price;
 
 -- Drop Tables
-DROP TABLE IF EXISTS hardware_vault.price_change_log;
-DROP TABLE IF EXISTS hardware_vault.stock_alert;
-DROP TABLE IF EXISTS hardware_vault.supplier;
-DROP TABLE IF EXISTS hardware_vault.specification;
-DROP TABLE IF EXISTS hardware_vault.has_product;
-DROP TABLE IF EXISTS hardware_vault.places_order;
-DROP TABLE IF EXISTS hardware_vault.customer;
-DROP TABLE IF EXISTS hardware_vault.employee;
-DROP TABLE IF EXISTS hardware_vault.warehouse;
-DROP TABLE IF EXISTS hardware_vault.organization;
-DROP TABLE IF EXISTS hardware_vault.product;
-DROP TABLE IF EXISTS hardware_vault.category;
+DROP TABLE IF EXISTS juja0400.price_change_log;
+DROP TABLE IF EXISTS juja0400.stock_alert;
+DROP TABLE IF EXISTS juja0400.supplier;
+DROP TABLE IF EXISTS juja0400.specification;
+DROP TABLE IF EXISTS juja0400.has_product;
+DROP TABLE IF EXISTS juja0400.places_order;
+DROP TABLE IF EXISTS juja0400.customer;
+DROP TABLE IF EXISTS juja0400.employee;
+DROP TABLE IF EXISTS juja0400.warehouse;
+DROP TABLE IF EXISTS juja0400.organization;
+DROP TABLE IF EXISTS juja0400.product;
+DROP TABLE IF EXISTS juja0400.category;
 
 
 -- 1. Category Table
-CREATE TABLE hardware_vault.category (
+CREATE TABLE juja0400.category (
     id SERIAL PRIMARY KEY, -- Automatic identity
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     description TEXT
 );
 
 -- 2. Product Table
-CREATE TABLE hardware_vault.product (
+CREATE TABLE juja0400.product (
     id SERIAL PRIMARY KEY, -- Automatic identity
     category_id INTEGER NOT NULL,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL CHECK (price >= 0), -- Declarative constraint: price must be non-negative
     stock_quantity INTEGER CHECK (stock_quantity >= 0), -- Declarative constrasint: stock_quantity must be non-negative
-    FOREIGN KEY (category_id) REFERENCES hardware_vault.category(id)
+    FOREIGN KEY (category_id) REFERENCES juja0400.category(id)
 );
 
 -- 3. Organization Table
-CREATE TABLE hardware_vault.organization (
+CREATE TABLE juja0400.organization (
     id SERIAL PRIMARY KEY, -- Automatic identity
     warehouse_count INTEGER DEFAULT 0 CHECK (warehouse_count >= 0) -- Default value and declarative constraint
 );
 
 -- 4. Warehouse Table
-CREATE TABLE hardware_vault.warehouse (
+CREATE TABLE juja0400.warehouse (
     id SERIAL PRIMARY KEY, -- Automatic identity
-    address VARCHAR(255) UNIQUE NOT NULL,
+    address VARCHAR(255) NOT NULL,
     organization_id INTEGER NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES hardware_vault.organization(id)
+    FOREIGN KEY (organization_id) REFERENCES juja0400.organization(id)
 );
 
 -- 5. Employee Table
-CREATE TABLE hardware_vault.employee (
+CREATE TABLE juja0400.employee (
     id SERIAL PRIMARY KEY, -- Automatic identity
     position VARCHAR(255),
     years_of_experience INTEGER CHECK (years_of_experience >= 0), -- Declarative constraint: non-negative experience
-    contact_info VARCHAR(255),
+    contact_info VARCHAR(255) UNIQUE NOT NULL,
     warehouse_id VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    FOREIGN KEY (warehouse_id) REFERENCES hardware_vault.warehouse(address)
+    FOREIGN KEY (warehouse_id) REFERENCES juja0400.warehouse(address)
 );
 
 -- 6. Customer Table
-CREATE TABLE hardware_vault.customer (
+CREATE TABLE juja0400.customer (
     id SERIAL PRIMARY KEY, -- Automatic identity
     order_count INTEGER DEFAULT 0 CHECK (order_count >= 0), -- Default value and declarative constraint
-    contact_info VARCHAR(255),
+    contact_info VARCHAR(255) UNIQUE NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL
 );
 
 -- 7. Places Order Table
-CREATE TABLE hardware_vault.places_order (
+CREATE TABLE juja0400.places_order (
     id SERIAL PRIMARY KEY, -- Automatic identity
-    customer_id INTEGER NOT NULL,
+    customer_id VARCHAR(255) NOT NULL,
     product_id INTEGER NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Default value for timestamps
+    date DATE DEFAULT CURRENT_DATE, -- Default value for date
     count INTEGER CHECK (count > 0), -- Declarative constraint: order count must be positive
-    FOREIGN KEY (customer_id) REFERENCES hardware_vault.customer(id),
-    FOREIGN KEY (product_id) REFERENCES hardware_vault.product(id)
+    FOREIGN KEY (customer_id) REFERENCES juja0400.customer(contact_info),
+    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
 );
 
 -- 8. Has Product Table
-CREATE TABLE hardware_vault.has_product (
+CREATE TABLE juja0400.has_product (
     warehouse_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
     stock_quantity INTEGER CHECK (stock_quantity >= 0),
     PRIMARY KEY (warehouse_id, product_id), -- Composite primary key
-    FOREIGN KEY (warehouse_id) REFERENCES hardware_vault.warehouse(id),
-    FOREIGN KEY (product_id) REFERENCES hardware_vault.product(id)
+    FOREIGN KEY (warehouse_id) REFERENCES juja0400.warehouse(id),
+    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
 );
 
 -- 9. Specification Table
-CREATE TABLE hardware_vault.specification (
+CREATE TABLE juja0400.specification (
     id SERIAL PRIMARY KEY, -- Automatic identity
     name VARCHAR(255) NOT NULL,
     description TEXT,
     value VARCHAR(255),
     product_id INTEGER NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES hardware_vault.product(id)
+    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
 );
 
 -- 10. Supplier Table (Updated for One-to-Many Relationship with Product)
-CREATE TABLE hardware_vault.supplier (
+CREATE TABLE juja0400.supplier (
     id SERIAL PRIMARY KEY, -- Automatic identity
-    phone_number VARCHAR(255),
-    email VARCHAR(255),
+    phone_number VARCHAR(255) CHECK (phone_number ~ '^[0-9+]+$'),
+    email VARCHAR(255) CHECK (email LIKE '%@%'),
     name VARCHAR(255) UNIQUE NOT NULL,
-    rating FLOAT CHECK (rating >= 0 AND rating <= 5), -- Declarative constraint: rating range
+    rating FLOAT CHECK (rating BETWEEN 0 AND 5), -- Declarative constraint: rating range
     address VARCHAR(255),
     product_id INTEGER NOT NULL, -- Foreign key to product (one-to-many)
     delivery_price DECIMAL(10, 2) CHECK (delivery_price >= 0), -- Declarative constraint: non-negative delivery price
-    FOREIGN KEY (product_id) REFERENCES hardware_vault.product(id)
+    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
 );
 
 -- 11. Price Change Log Table (for Trigger)
-CREATE TABLE hardware_vault.price_change_log (
+CREATE TABLE juja0400.price_change_log (
     id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL,
     old_price DECIMAL(10, 2),
     new_price DECIMAL(10, 2),
     change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES hardware_vault.product(id)
+    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
 );
 
 -- 12. Stock Alert Table (for Trigger)
-CREATE TABLE hardware_vault.stock_alert (
+CREATE TABLE juja0400.stock_alert (
     id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL,
-    alert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    alert_date DATE DEFAULT CURRENT_DATE,
     alert_message TEXT,
-    FOREIGN KEY (product_id) REFERENCES hardware_vault.product(id)
+    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
 );
 
 -- 13. Create Indexes
-CREATE INDEX idx_employee_fullname ON hardware_vault.employee (first_name, last_name); -- Composite index
-CREATE INDEX idx_customer_fullname ON hardware_vault.customer (first_name, last_name); -- Composite index
+CREATE INDEX idx_employee_fullname ON juja0400.employee (first_name, last_name); -- Composite index
+CREATE INDEX idx_customer_fullname ON juja0400.customer (first_name, last_name); -- Composite index
 
-CREATE UNIQUE INDEX idx_product_name ON hardware_vault.product (name);
-CREATE UNIQUE INDEX idx_category_name ON hardware_vault.category (name);
-CREATE UNIQUE INDEX idx_warehouse_address ON hardware_vault.warehouse (address);
-CREATE UNIQUE INDEX idx_supplier_contact_info ON hardware_vault.supplier (phone_number, email); 
+CREATE UNIQUE INDEX idx_product_name ON juja0400.product (name);
+CREATE UNIQUE INDEX idx_category_name ON juja0400.category (name);
+CREATE UNIQUE INDEX idx_warehouse_address ON juja0400.warehouse (address);
+CREATE UNIQUE INDEX idx_supplier_contact_info ON juja0400.supplier (phone_number, email); 
 
-CREATE INDEX idx_stock_quantity ON hardware_vault.product (stock_quantity);
-CREATE INDEX idx_supplier_rating ON hardware_vault.supplier (rating);
-CREATE INDEX idx_product_price ON hardware_vault.product (price);
+CREATE INDEX idx_stock_quantity ON juja0400.product (stock_quantity);
+CREATE INDEX idx_supplier_rating ON juja0400.supplier (rating);
+CREATE INDEX idx_product_price ON juja0400.product (price);
 
 -- Virtual Tables (Views)
 -- 1. Products with Low Stock (Stock < 10)
-CREATE VIEW hardware_vault.low_stock_products AS
+CREATE VIEW juja0400.low_stock_products AS
 SELECT p.id, p.name, p.stock_quantity
-FROM hardware_vault.product p
+FROM juja0400.product p
 WHERE p.stock_quantity < 10;
 
 -- 2. Suppliers by Rating (rating > 3.5)
-CREATE VIEW hardware_vault.suppliers_by_rating AS
+CREATE VIEW juja0400.suppliers_by_rating AS
 SELECT s.id, s.name, s.rating, s.phone_number, s.email
-FROM hardware_vault.supplier s
+FROM juja0400.supplier s
 WHERE s.rating > 3.5
 ORDER BY s.rating DESC;
 
 -- 3. Active Products (Stock > 0)
-CREATE VIEW hardware_vault.active_products AS
+CREATE VIEW juja0400.active_products AS
 SELECT p.id, p.name, p.price, p.stock_quantity
-FROM hardware_vault.product p
+FROM juja0400.product p
 WHERE p.stock_quantity > 0;
 
 -- 4. High Rated Suppliers (Rating >= 4.0)
-CREATE VIEW hardware_vault.high_rated_suppliers AS
+CREATE VIEW juja0400.high_rated_suppliers AS
 SELECT s.id, s.name, s.rating
-FROM hardware_vault.supplier s
+FROM juja0400.supplier s
 WHERE s.rating >= 4.0;
 
 -- 5. Low Stock Products in Warehouse (Stock < 10)
-CREATE VIEW hardware_vault.low_stock_products_in_warehouse AS
+CREATE VIEW juja0400.low_stock_products_in_warehouse AS
 SELECT hp.warehouse_id, hp.product_id, p.name, p.stock_quantity
-FROM hardware_vault.has_product hp
-JOIN hardware_vault.product p ON hp.product_id = p.id
+FROM juja0400.has_product hp
+JOIN juja0400.product p ON hp.product_id = p.id
 WHERE p.stock_quantity < 10;
 
 -- 6. Lowest Delivery Price by Supplier
-CREATE VIEW hardware_vault.lowest_delivery_price AS
+CREATE VIEW juja0400.lowest_delivery_price AS
 SELECT s.id, s.name, s.delivery_price, p.name AS product_name
-FROM hardware_vault.supplier s
-LEFT JOIN hardware_vault.product p ON s.product_id = p.id
-WHERE s.delivery_price = (SELECT MIN(delivery_price) FROM hardware_vault.supplier);
+FROM juja0400.supplier s
+LEFT JOIN juja0400.product p ON s.product_id = p.id
+WHERE s.delivery_price = (SELECT MIN(delivery_price) FROM juja0400.supplier);
 
--- Materialized View and Refresh
-CREATE MATERIALIZED VIEW hardware_vault.product_summary AS
-SELECT c.name AS category_name, COUNT(p.id) AS product_count
-FROM hardware_vault.product p
-JOIN hardware_vault.category c ON p.category_id = c.id
-GROUP BY c.name;
-
--- Refresh Command for Materialized View
-REFRESH MATERIALIZED VIEW hardware_vault.product_summary;
-
--- Materialized View: Product Sales Summary
-CREATE MATERIALIZED VIEW hardware_vault.product_stock_summary AS
+-- Materialized View: Product stock Summary
+CREATE MATERIALIZED VIEW juja0400.product_stock_summary AS
 SELECT p.id AS product_id, p.name AS product_name, p.stock_quantity, total_value AS stock_value
-FROM hardware_vault.product p
+FROM juja0400.product p
 JOIN (
     SELECT id, SUM(stock_quantity * price) AS total_value
-    FROM hardware_vault.product
+    FROM juja0400.product
     GROUP BY id
 ) AS stock_value ON p.id = stock_value.id;
 
 -- Refresh Command for Materialized View
-REFRESH MATERIALIZED VIEW hardware_vault.product_stock_summary;
+REFRESH MATERIALIZED VIEW juja0400.product_stock_summary;
 
--- Materialized View: All product revenue
-CREATE MATERIALIZED VIEW hardware_vault.all_product_revenue AS
-SELECT p.id AS product_id, p.name AS product_name, SUM(po.price / 1.21 ) AS total_revenue
-FROM hardware_vault.places_order po
-JOIN hardware_vault.product p ON po.product_id = p.id
+-- Materialized View: Product Revenue from Last Week
+CREATE MATERIALIZED VIEW juja0400.all_product_revenue AS
+SELECT p.id AS product_id, p.name AS product_name, SUM(po.price / 1.21) AS total_revenue
+FROM juja0400.places_order po
+JOIN juja0400.product p ON po.product_id = p.id
+WHERE po.date >= CURRENT_DATE - INTERVAL '7 days'
 GROUP BY p.id, p.name
 ORDER BY total_revenue DESC;
 
-REFRESH MATERIALIZED VIEW hardware_vault.all_product_revenue;
+-- Refresh Command for Materialized View
+REFRESH MATERIALIZED VIEW juja0400.all_product_revenue;
 
 -- Triggers for Business Rules
 -- Rule 1: Prevent decreasing stock quantity below zero
@@ -279,18 +271,18 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_prevent_negative_stock
-BEFORE UPDATE ON hardware_vault.has_product
+BEFORE UPDATE ON juja0400.has_product
 FOR EACH ROW EXECUTE FUNCTION prevent_negative_stock();
 
 -- Rule 2: Automatically update organization's warehouse count
 CREATE OR REPLACE FUNCTION update_warehouse_count() RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'INSERT' THEN
-        UPDATE hardware_vault.organization
+        UPDATE juja0400.organization
         SET warehouse_count = warehouse_count + 1
         WHERE id = NEW.organization_id;
     ELSIF TG_OP = 'DELETE' THEN
-        UPDATE hardware_vault.organization
+        UPDATE juja0400.organization
         SET warehouse_count = warehouse_count - 1
         WHERE id = OLD.organization_id;
     END IF;
@@ -299,14 +291,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_update_warehouse_count
-AFTER INSERT OR DELETE ON hardware_vault.warehouse
+AFTER INSERT OR DELETE ON juja0400.warehouse
 FOR EACH ROW EXECUTE FUNCTION update_warehouse_count();
 
 -- Rule 3: Log Price Change (trigger when product price is updated)
 CREATE OR REPLACE FUNCTION log_price_change() RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.price <> OLD.price THEN
-        INSERT INTO hardware_vault.price_change_log (product_id, old_price, new_price)
+        INSERT INTO juja0400.price_change_log (product_id, old_price, new_price)
         VALUES (NEW.id, OLD.price, NEW.price);
     END IF;
     RETURN NEW;
@@ -314,32 +306,32 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_log_price_change
-AFTER UPDATE ON hardware_vault.product
+AFTER UPDATE ON juja0400.product
 FOR EACH ROW EXECUTE FUNCTION log_price_change();
 
 -- Rule 4: Update customer order count (trigger when new order is placed)
 CREATE OR REPLACE FUNCTION update_order_count() RETURNS TRIGGER AS $$
 BEGIN
-    UPDATE hardware_vault.customer
+    UPDATE juja0400.customer
     SET order_count = (
         SELECT COUNT(*)
-        FROM hardware_vault.places_order
+        FROM juja0400.places_order
         WHERE customer_id = NEW.customer_id
     )
-    WHERE id = NEW.customer_id;
+    WHERE contact_info = NEW.customer_id;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_update_order_count
-AFTER INSERT OR UPDATE ON hardware_vault.places_order
+AFTER INSERT OR UPDATE ON juja0400.places_order
 FOR EACH ROW EXECUTE FUNCTION update_order_count();
 
 -- Rule 5: Stock Replenishment Alert (trigger when stock falls below 10)
 CREATE OR REPLACE FUNCTION stock_replenishment_alert() RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.stock_quantity < 10 THEN
-        INSERT INTO hardware_vault.stock_alert (product_id, alert_message)
+        INSERT INTO juja0400.stock_alert (product_id, alert_message)
         VALUES (NEW.product_id, 'Stock is below 10, consider replenishing.');
     END IF;
     RETURN NEW;
@@ -347,10 +339,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_stock_replenishment_alert
-AFTER UPDATE ON hardware_vault.has_product
+AFTER UPDATE ON juja0400.has_product
 FOR EACH ROW EXECUTE FUNCTION stock_replenishment_alert();
 
--- DROP TRIGGER trg_stock_replenishment_alert ON hardware_vault.has_product;
+-- DROP TRIGGER trg_stock_replenishment_alert ON juja0400.has_product;
 
 -- Rule 6: Calculate order revenue based on price, quantity and delivery price
 CREATE OR REPLACE FUNCTION calculate_order_price()
@@ -361,12 +353,12 @@ DECLARE
 BEGIN
     -- Get the product's price from the product table
     SELECT price INTO product_price
-    FROM hardware_vault.product
+    FROM juja0400.product
     WHERE id = NEW.product_id;
 
    -- Get the smallest delivery price from the supplier table for the product
     SELECT COALESCE(MIN(delivery_price), 0) INTO min_delivery_price
-    FROM hardware_vault.supplier
+    FROM juja0400.supplier
     WHERE product_id = NEW.product_id;
 
     -- Calculate the price for the places_order table
@@ -377,7 +369,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER set_order_price
-BEFORE INSERT ON hardware_vault.places_order
+BEFORE INSERT ON juja0400.places_order
 FOR EACH ROW
 EXECUTE FUNCTION calculate_order_price();
 
@@ -390,7 +382,7 @@ DECLARE
 BEGIN
     -- Calculate the total stock for the ordered product across all warehouses
     SELECT SUM(stock_quantity) INTO total_stock
-    FROM hardware_vault.has_product
+    FROM juja0400.has_product
     WHERE product_id = NEW.product_id;
 
     -- Check if there is enough stock
@@ -401,20 +393,20 @@ BEGIN
     -- Deduct the stock from the warehouses in order
     FOR warehouse IN
         SELECT warehouse_id, stock_quantity
-        FROM hardware_vault.has_product
+        FROM juja0400.has_product
         WHERE product_id = NEW.product_id
         ORDER BY stock_quantity DESC -- Deduct from warehouses with more stock first
     LOOP
         IF warehouse.stock_quantity >= NEW.count THEN
             -- Deduct stock from this warehouse
-            UPDATE hardware_vault.has_product
+            UPDATE juja0400.has_product
             SET stock_quantity = stock_quantity - NEW.count
             WHERE warehouse_id = warehouse.warehouse_id
             AND product_id = NEW.product_id;
             EXIT; -- Exit once stock is fulfilled
         ELSE
             -- Use all stock from this warehouse and continue to the next
-            UPDATE hardware_vault.has_product
+            UPDATE juja0400.has_product
             SET stock_quantity = 0
             WHERE warehouse_id = warehouse.warehouse_id
             AND product_id = NEW.product_id;
@@ -423,7 +415,7 @@ BEGIN
     END LOOP;
 
     -- Update the product's total stock quantity
-    UPDATE hardware_vault.product
+    UPDATE juja0400.product
     SET stock_quantity = stock_quantity - NEW.count
     WHERE id = NEW.product_id;
 
@@ -432,7 +424,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER before_place_order
-BEFORE INSERT ON hardware_vault.places_order
+BEFORE INSERT ON juja0400.places_order
 FOR EACH ROW
 EXECUTE FUNCTION handle_order_stock();
 
@@ -448,13 +440,13 @@ BEGIN
     -- For each warehouse if has_product does not exist, insert with stock_quantity 0
     FOR warehouse IN
         SELECT id
-        FROM hardware_vault.warehouse
+        FROM juja0400.warehouse
     LOOP
-        INSERT INTO hardware_vault.has_product (warehouse_id, product_id, stock_quantity)
+        INSERT INTO juja0400.has_product (warehouse_id, product_id, stock_quantity)
         SELECT warehouse.id, NEW.id, 0
         WHERE NOT EXISTS (
             SELECT 1
-            FROM hardware_vault.has_product
+            FROM juja0400.has_product
             WHERE warehouse_id = warehouse.id
             AND product_id = NEW.id
         );
@@ -462,7 +454,7 @@ BEGIN
 
     -- Count the number of warehouses storing this product
     SELECT COUNT(*) INTO warehouse_count
-    FROM hardware_vault.has_product
+    FROM juja0400.has_product
     WHERE product_id = NEW.id;
 
     -- Calculate how much stock each warehouse should get
@@ -472,18 +464,18 @@ BEGIN
     -- Distribute stock across all warehouses
     FOR warehouse IN
         SELECT warehouse_id
-        FROM hardware_vault.has_product
+        FROM juja0400.has_product
         WHERE product_id = NEW.id
     LOOP
         -- Allocate base stock to each warehouse
-        INSERT INTO hardware_vault.has_product (warehouse_id, product_id, stock_quantity)
+        INSERT INTO juja0400.has_product (warehouse_id, product_id, stock_quantity)
         VALUES (warehouse.warehouse_id, NEW.id, base_allocation)
         ON CONFLICT (warehouse_id, product_id) DO UPDATE
-        SET stock_quantity = hardware_vault.has_product.stock_quantity + EXCLUDED.stock_quantity;
+        SET stock_quantity = juja0400.has_product.stock_quantity + EXCLUDED.stock_quantity;
 
         -- Distribute remaining stock to the first few warehouses
         IF remaining_stock > 0 THEN
-            UPDATE hardware_vault.has_product
+            UPDATE juja0400.has_product
             SET stock_quantity = stock_quantity + 1
             WHERE warehouse_id = warehouse.warehouse_id
             AND product_id = NEW.id;
@@ -496,7 +488,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER after_replenish_stock
-AFTER INSERT OR UPDATE ON hardware_vault.product
+AFTER INSERT OR UPDATE ON juja0400.product
 FOR EACH ROW
 EXECUTE FUNCTION replenish_stock();
 
@@ -506,7 +498,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
-        FROM hardware_vault.product
+        FROM juja0400.product
         WHERE id = NEW.product_id
     ) THEN
         RAISE EXCEPTION 'Product with ID % does not exist', NEW.product_id;
@@ -516,7 +508,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_product_exists
-BEFORE INSERT ON hardware_vault.specification
+BEFORE INSERT ON juja0400.specification
 FOR EACH ROW
 EXECUTE FUNCTION check_product_exists();
 
@@ -526,7 +518,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
-        FROM hardware_vault.warehouse
+        FROM juja0400.warehouse
         WHERE address = NEW.warehouse_id
     ) THEN
         RAISE EXCEPTION 'Warehouse with ID % does not exist', NEW.warehouse_id;
@@ -536,7 +528,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_warehouse_exists
-BEFORE INSERT ON hardware_vault.employee
+BEFORE INSERT ON juja0400.employee
 FOR EACH ROW
 EXECUTE FUNCTION check_warehouse_exists();
 
@@ -550,36 +542,53 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER before_insert_customer
-BEFORE INSERT ON hardware_vault.customer
+BEFORE INSERT ON juja0400.customer
 FOR EACH ROW
 EXECUTE FUNCTION set_order_count_to_zero();
 
--- Rule 12: Set has_product stock_quantity to 0 if product is deleted
+-- Rule 12: Set has_product stock_quantity to 0 if product is deleted and delete specification.
 CREATE OR REPLACE FUNCTION set_stock_to_zero()
 RETURNS TRIGGER AS $$
 BEGIN
-    DELETE FROM hardware_vault.has_product
-    WHERE product_id = OLD.id;
+    DELETE FROM juja0400.has_product
+        WHERE product_id = OLD.id;
+    DELETE FROM juja0400.specification
+        WHERE product_id = OLD.id;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER before_delete_product
-BEFORE DELETE ON hardware_vault.product
+BEFORE DELETE ON juja0400.product
 FOR EACH ROW
 EXECUTE FUNCTION set_stock_to_zero();
 
+-- Rule 13: Refresh materialized views
+CREATE OR REPLACE FUNCTION refresh_materialized_views()
+RETURNS TRIGGER AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW juja0400.product_stock_summary;
+    REFRESH MATERIALIZED VIEW juja0400.all_product_revenue;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER refresh_materialized_views
+AFTER INSERT OR UPDATE ON juja0400.places_order
+FOR EACH STATEMENT
+EXECUTE FUNCTION refresh_materialized_views();
+
 
 -- Insert test data for Organization Table
-INSERT INTO hardware_vault.organization DEFAULT VALUES;
+INSERT INTO juja0400.organization DEFAULT VALUES;
 -- Insert test data for Warehouse Table
-INSERT INTO hardware_vault.warehouse (address, organization_id) VALUES
+INSERT INTO juja0400.warehouse (address, organization_id) VALUES
 ('123 Main St', 1),
 ('456 Elm St', 1),
 ('789 Oak St', 1);
 
 -- Insert test data for Category Table
-INSERT INTO hardware_vault.category (name, description) VALUES
+INSERT INTO juja0400.category (name, description) VALUES
 ('CPU', 'Central Processing Unit'),
 ('GPU', 'Graphics Processing Unit'),
 ('Motherboard', 'Main circuit board'),
@@ -598,7 +607,7 @@ INSERT INTO hardware_vault.category (name, description) VALUES
 
 
 -- Insert test data for Product Table
-INSERT INTO hardware_vault.product (category_id, name, description, price, stock_quantity) VALUES
+INSERT INTO juja0400.product (category_id, name, description, price, stock_quantity) VALUES
 (1, 'AMD Ryzen 9 7950X', '16 cores / 32 threads / 5.7 GHz boost. Zen 4 architecture.', 465.00, 15),
 (1, 'Intel Core i5-14600K', '14 cores (6P + 8E) / 5.3 GHz boost. Excellent gaming and productivity.', 319.00, 30),
 (1, 'AMD Ryzen 7 7700X', '8 cores / 16 threads / 4.5 GHz base clock. Great for AM5 gaming.', 259.00, 25),
@@ -662,13 +671,13 @@ INSERT INTO hardware_vault.product (category_id, name, description, price, stock
 (15, 'Dell X540-T2', 'Dual-port 10Gbps Ethernet card for server and workstation connectivity.', 249.99, 20);
 
 -- Insert test data for Supplier Table
-INSERT INTO hardware_vault.supplier (phone_number, email, name, rating, address, product_id, delivery_price) VALUES
+INSERT INTO juja0400.supplier (phone_number, email, name, rating, address, product_id, delivery_price) VALUES
 ('8686865568','supplier1@example.com', 'Supplier One', 4.5, '123 Supplier St', 127, 2.78),
 ('8686868686','supplier2@example.com', 'Supplier Two', 3.8, '456 Supplier St', 130, 5.15),
 ('6581898455','supplier3@example.com', 'Supplier Three', 4.5, '1233 Supplier St', 131, 3.17),
 ('6546588155','supplier4@example.com', 'Supplier Four', 3.8, '4526 Supplier St', 132, 1.99);
 
-INSERT INTO hardware_vault.specification (name, description, value, product_id) VALUES
+INSERT INTO juja0400.specification (name, description, value, product_id) VALUES
 ('Cores', 'Number of processor cores', '16 cores (8P + 8E)', 1),
 ('Base Clock', 'Base clock speed', '3.2 GHz', 1),
 ('Boost Clock', 'Boost clock speed', '5.2 GHz', 1),
@@ -908,7 +917,7 @@ INSERT INTO hardware_vault.specification (name, description, value, product_id) 
 ('Latency', 'Network card latency', 'Low', 60);
 
 -- Insert test data for Employee Table
-INSERT INTO hardware_vault.employee (position, years_of_experience, contact_info, warehouse_id, first_name, last_name) VALUES
+INSERT INTO juja0400.employee (position, years_of_experience, contact_info, warehouse_id, first_name, last_name) VALUES
 ('Manager', 5, 'manager@example.com', '123 Main St', 'John', 'Doe'),
 ('Worker', 2, 'worker@example.com', '456 Elm St', 'Jane', 'Smith'),
 ('Worker', 2, 'worker2@example.com', '789 Oak St', 'Alice', 'Johnson'),
@@ -918,7 +927,7 @@ INSERT INTO hardware_vault.employee (position, years_of_experience, contact_info
 -- ('456 Elm St', 1),
 -- ('789 Oak St', 1);
 -- Insert test data for Customer Table
-INSERT INTO hardware_vault.customer (contact_info, first_name, last_name) VALUES
+INSERT INTO juja0400.customer (contact_info, first_name, last_name) VALUES
 ('customer1@example.com', 'Alice', 'Johnson'),
 ('customer2@example.com', 'Bob', 'Williams'),
 ('customer3@example.com', 'Charlie', 'Brown'),
@@ -928,42 +937,42 @@ INSERT INTO hardware_vault.customer (contact_info, first_name, last_name) VALUES
 ('customer7@example.com', 'Grace', 'Lee');
 
 -- Insert test data for Places Order Table
-INSERT INTO hardware_vault.places_order (customer_id, product_id, count) VALUES
-(3, 3, 3),
-(4, 4, 4),
-(2, 10, 5),
-(1, 1, 1),
-(1, 3, 2),
-(2, 4, 5),
-(3, 5, 3),
-(4, 6, 1),
-(5, 7, 2),
-(6, 8, 1),
-(7, 9, 3),
-(2, 10, 5);
+INSERT INTO juja0400.places_order (customer_id, product_id, count) VALUES
+('customer1@example.com', 3, 3),
+('customer1@example.com', 4, 4),
+('customer3@example.com', 10, 5),
+('customer7@example.com', 1, 1),
+('customer7@example.com', 3, 2),
+('customer3@example.com', 4, 5),
+('customer5@example.com', 5, 3),
+('customer1@example.com', 6, 1),
+('customer2@example.com', 7, 2),
+('customer6@example.com', 8, 1),
+('customer2@example.com', 9, 3),
+('customer6@example.com', 10, 5);
 
 -- Insert test data for Price Change Log Table
--- INSERT INTO hardware_vault.price_change_log (product_id, old_price, new_price) VALUES
+-- INSERT INTO juja0400.price_change_log (product_id, old_price, new_price) VALUES
 -- (1, 299.99, 589.99),
 -- (2, 199.99, 465.00),
 -- (16, 79.99, 220.54);
 
 -- Test for price change log.
-UPDATE hardware_vault.product
+UPDATE juja0400.product
 SET price = 23.12
 WHERE id = 2;
 
 
 -- Insert test data for Stock Alert Table
-INSERT INTO hardware_vault.stock_alert (product_id, alert_message) VALUES
+INSERT INTO juja0400.stock_alert (product_id, alert_message) VALUES
 (1, 'Stock is below 10, consider replenishing.'),
 (7, 'Stock is below 10, consider replenishing.'),
 (32, 'Stock is below 10, consider replenishing.');
 
 -- Update test data for Product Table.
-UPDATE hardware_vault.product
+UPDATE juja0400.product
 SET stock_quantity = 10
 WHERE id = 1;
 
 -- Delete test data for Product Table.
-DELETE FROM hardware_vault.product WHERE id = 1;
+DELETE FROM juja0400.product WHERE id = 1;
