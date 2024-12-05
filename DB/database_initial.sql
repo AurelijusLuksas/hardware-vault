@@ -1,4 +1,68 @@
 -- Drop and recreate the schema
+-- Drop Triggers
+DROP TRIGGER IF EXISTS trg_prevent_negative_stock ON hardware_vault.has_product;
+DROP TRIGGER IF EXISTS trg_update_warehouse_count ON hardware_vault.warehouse;
+DROP TRIGGER IF EXISTS trg_log_price_change ON hardware_vault.product;
+DROP TRIGGER IF EXISTS trg_update_order_count ON hardware_vault.places_order;
+DROP TRIGGER IF EXISTS trg_stock_replenishment_alert ON hardware_vault.has_product;
+DROP TRIGGER IF EXISTS set_order_price ON hardware_vault.places_order;
+DROP TRIGGER IF EXISTS before_place_order ON hardware_vault.places_order;
+DROP TRIGGER IF EXISTS after_replenish_stock ON hardware_vault.product;
+DROP TRIGGER IF EXISTS trg_check_product_exists ON hardware_vault.specification;
+DROP TRIGGER IF EXISTS trg_check_warehouse_exists ON hardware_vault.employee;
+DROP TRIGGER IF EXISTS before_insert_customer ON hardware_vault.customer;
+
+-- Drop Functions
+DROP FUNCTION IF EXISTS prevent_negative_stock();
+DROP FUNCTION IF EXISTS update_warehouse_count();
+DROP FUNCTION IF EXISTS log_price_change();
+DROP FUNCTION IF EXISTS update_order_count();
+DROP FUNCTION IF EXISTS stock_replenishment_alert();
+DROP FUNCTION IF EXISTS calculate_order_price();
+DROP FUNCTION IF EXISTS handle_order_stock();
+DROP FUNCTION IF EXISTS replenish_stock();
+DROP FUNCTION IF EXISTS check_product_exists();
+DROP FUNCTION IF EXISTS check_warehouse_exists();
+DROP FUNCTION IF EXISTS set_order_count_to_zero();
+
+-- Drop Materialized Views
+DROP MATERIALIZED VIEW IF EXISTS hardware_vault.product_summary;
+DROP MATERIALIZED VIEW IF EXISTS hardware_vault.product_stock_summary;
+DROP MATERIALIZED VIEW IF EXISTS hardware_vault.all_product_revenue;
+
+-- Drop Views
+DROP VIEW IF EXISTS hardware_vault.low_stock_products;
+DROP VIEW IF EXISTS hardware_vault.suppliers_by_rating;
+DROP VIEW IF EXISTS hardware_vault.active_products;
+DROP VIEW IF EXISTS hardware_vault.high_rated_suppliers;
+DROP VIEW IF EXISTS hardware_vault.low_stock_products_in_warehouse;
+DROP VIEW IF EXISTS hardware_vault.lowest_delivery_price;
+
+-- Drop Indexes
+DROP INDEX IF EXISTS idx_employee_fullname;
+DROP INDEX IF EXISTS idx_customer_fullname;
+DROP INDEX IF EXISTS idx_product_name;
+DROP INDEX IF EXISTS idx_category_name;
+DROP INDEX IF EXISTS idx_warehouse_address;
+DROP INDEX IF EXISTS idx_supplier_contact_info;
+DROP INDEX IF EXISTS idx_stock_quantity;
+DROP INDEX IF EXISTS idx_supplier_rating;
+DROP INDEX IF EXISTS idx_product_price;
+
+-- Drop Tables
+DROP TABLE IF EXISTS hardware_vault.price_change_log;
+DROP TABLE IF EXISTS hardware_vault.stock_alert;
+DROP TABLE IF EXISTS hardware_vault.supplier;
+DROP TABLE IF EXISTS hardware_vault.specification;
+DROP TABLE IF EXISTS hardware_vault.has_product;
+DROP TABLE IF EXISTS hardware_vault.places_order;
+DROP TABLE IF EXISTS hardware_vault.customer;
+DROP TABLE IF EXISTS hardware_vault.employee;
+DROP TABLE IF EXISTS hardware_vault.warehouse;
+DROP TABLE IF EXISTS hardware_vault.organization;
+DROP TABLE IF EXISTS hardware_vault.product;
+DROP TABLE IF EXISTS hardware_vault.category;
+
 
 -- 1. Category Table
 CREATE TABLE hardware_vault.category (
