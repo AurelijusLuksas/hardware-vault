@@ -554,6 +554,22 @@ BEFORE INSERT ON hardware_vault.customer
 FOR EACH ROW
 EXECUTE FUNCTION set_order_count_to_zero();
 
+-- Rule 11: Set has_product stock_quantity to 0 if product is deleted
+CREATE OR REPLACE FUNCTION set_stock_to_zero()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM hardware_vault.has_product
+    WHERE product_id = OLD.id;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER before_delete_product
+BEFORE DELETE ON hardware_vault.product
+FOR EACH ROW
+EXECUTE FUNCTION set_stock_to_zero();
+
+
 -- Insert test data for Organization Table
 INSERT INTO hardware_vault.organization DEFAULT VALUES;
 -- Insert test data for Warehouse Table
@@ -927,10 +943,14 @@ INSERT INTO hardware_vault.places_order (customer_id, product_id, count) VALUES
 (2, 10, 5);
 
 -- Insert test data for Price Change Log Table
-INSERT INTO hardware_vault.price_change_log (product_id, old_price, new_price) VALUES
-(1, 299.99, 589.99),
-(2, 199.99, 465.00),
-(16, 79.99, 220.54);
+-- INSERT INTO hardware_vault.price_change_log (product_id, old_price, new_price) VALUES
+-- (1, 299.99, 589.99),
+-- (2, 199.99, 465.00),
+-- (16, 79.99, 220.54);
+
+UPDATE juja0400.product
+SET price = 23.12
+WHERE id = 2;
 
 
 -- Insert test data for Stock Alert Table
@@ -938,4 +958,15 @@ INSERT INTO hardware_vault.stock_alert (product_id, alert_message) VALUES
 (1, 'Stock is below 10, consider replenishing.'),
 (7, 'Stock is below 10, consider replenishing.'),
 (32, 'Stock is below 10, consider replenishing.');
+
+-- Update test data for Product Table.
+UPDATE hardware_vault.product
+SET stock_quantity = 10
+WHERE id = 1;
+
+-- Delete test data for Product Table.
+DELETE FROM hardware_vault.product WHERE id = 1;
+
+
+
 
