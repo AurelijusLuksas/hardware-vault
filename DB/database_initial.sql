@@ -554,7 +554,7 @@ BEFORE INSERT ON hardware_vault.customer
 FOR EACH ROW
 EXECUTE FUNCTION set_order_count_to_zero();
 
--- Rule 11: Set has_product stock_quantity to 0 if product is deleted
+-- Rule 12: Set has_product stock_quantity to 0 if product is deleted
 CREATE OR REPLACE FUNCTION set_stock_to_zero()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -948,7 +948,8 @@ INSERT INTO hardware_vault.places_order (customer_id, product_id, count) VALUES
 -- (2, 199.99, 465.00),
 -- (16, 79.99, 220.54);
 
-UPDATE juja0400.product
+-- Test for price change log.
+UPDATE hardware_vault.product
 SET price = 23.12
 WHERE id = 2;
 
@@ -966,7 +967,3 @@ WHERE id = 1;
 
 -- Delete test data for Product Table.
 DELETE FROM hardware_vault.product WHERE id = 1;
-
-
-
-
