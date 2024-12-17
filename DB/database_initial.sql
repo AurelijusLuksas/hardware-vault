@@ -91,7 +91,7 @@ CREATE TABLE juja0400.organization (
 -- 4. Warehouse Table
 CREATE TABLE juja0400.warehouse (
     id SERIAL PRIMARY KEY, -- Automatic identity
-    address VARCHAR(255) NOT NULL,
+    address VARCHAR(255) NOT NULL UNIQUE,
     organization_id INTEGER NOT NULL,
     FOREIGN KEY (organization_id) REFERENCES juja0400.organization(id)
 );
