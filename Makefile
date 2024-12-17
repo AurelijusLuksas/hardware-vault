@@ -1,16 +1,14 @@
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall 
+CC = g++
+CFLAGS = -std=c++23 -Wall -Wextra -Wpedantic -flto -O3 -I/usr/include/postgresql
+LFLAGS = -lstdc++exp -L/usr/lib/ -lecpg
+SRC = $(wildcard src/*.cpp)
+SRC_BUILD = $(SRC:src/%.cpp=build/%.cpp)
 
-# List of source files
-SRCS = main.cpp 
+release: $(SRC_BUILD)
+	$(CC) $(CFLAGS) $^ -o program $(LFLAGS)
 
-# Output executable
-TARGET = hardwareVault
+build/%.cpp: src/%.cpp
+	ecpg $< -o $@
 
-# Build target
-$(TARGET): $(SRCS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS)
-
-# Clean target
 clean:
-	rm -f $(TARGET) $(BENCHMARK_TARGET)
+	rm -rf program build
