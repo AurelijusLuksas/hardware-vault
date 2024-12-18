@@ -1,11 +1,12 @@
 #include <iostream>
+#include "utility.h"
 
 void copyStr(const std::string &str, char* c_str, size_t size) {
     auto copied = str.copy(c_str, size);
     c_str[copied] = '\0';
 }
 
-void addProduct(int category_id, const std::string& name, const std::string& description, double price, int stock_quantity) {
+void addProduct() {
     EXEC SQL BEGIN DECLARE SECTION;
     int c_category_id;
     char c_name[100];
@@ -13,6 +14,12 @@ void addProduct(int category_id, const std::string& name, const std::string& des
     double c_price;
     int c_stock_quantity;
     EXEC SQL END DECLARE SECTION;
+
+    std::string name = getString("Iveskite produkto pavadinima: ");
+    std::string description = getString("Iveskite produkto aprasyma: ");
+    double price = getDouble("Iveskite produkto kaina: ");
+    int stock_quantity = getInt("Iveskite produkto kieki: ");
+    int category_id = getInt("Iveskite produkto kategorijos ID: ");
 
     copyStr(name, c_name, sizeof(c_name));
     copyStr(description, c_description, sizeof(c_description));
@@ -29,5 +36,4 @@ void addProduct(int category_id, const std::string& name, const std::string& des
         std::cout << "Klaida pridedant produkta\n";
         std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
     }
-
 }

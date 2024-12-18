@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
+#include <fstream>
+#include <sstream>
 #include "add_queries.h"
 
 #define MAX_PASSWORD_LENGTH 100
@@ -30,15 +32,33 @@ char* getpass(const char* prompt) {
 EXEC SQL BEGIN DECLARE SECTION;
 int result;
 char password[MAX_PASSWORD_LENGTH];
-char username[9] = "name";
+char username[9] = "";
 EXEC SQL END DECLARE SECTION;
 
 int main() {
     printf("Programa pradeda darba\n");
 
-    char* pwd = getpass("Iveskite slaptazodi: ");
-    strncpy(password, pwd, sizeof(password) - 1);
-    password[sizeof(password) - 1] = '\0';
+    // char* pwd = getpass("Iveskite slaptazodi: ");
+    // strncpy(password, pwd, sizeof(password) - 1);
+    // password[sizeof(password) - 1] = '\0';
+    std::ifstream envFile(".env");
+    std::string line;
+    while (std::getline(envFile, line)) {
+        std::istringstream iss(line);
+        std::string key, value;
+        if (std::getline(iss, key, '=') && std::getline(iss, value)) {
+            if (key == "password") {
+                strncpy(password, value.c_str(), sizeof(password) - 1);
+                password[sizeof(password) - 1] = '\0';
+            } else if (key == "username") {
+                strncpy(username, value.c_str(), sizeof(username) - 1);
+                username[sizeof(username) - 1] = '\0';
+            }
+        }
+    }
+    std::cout << "Username: " << username << std::endl;
+    std::cout << "Password: " << password << std::endl;
+
 
     EXEC SQL CONNECT TO studentu@localhost:5432 USER :username USING :password;
 
@@ -85,7 +105,6 @@ int main() {
                     switch (choiceFind) {
                         case 1:
                             std::cout << "Prideti nauja produkta\n";
-
                             break;
                         case 2:
                             std::cout << "Prideti nauja kategorija\n";
@@ -140,8 +159,8 @@ int main() {
 
                     switch (choiceAdd) {
                         case 1:
-                            
-                            addProduct(1, "Produktas", "Produkto aprasymas", 10.0, 100);
+                            std::cout << "Prideti nauja produkta\n";
+                            addProduct();
                             break;
                         case 2:
                             std::cout << "Prideti nauja kategorija\n";
