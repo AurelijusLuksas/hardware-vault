@@ -125,6 +125,8 @@ void printCategory() {
         }
         printf("%d. %s - %s\n", category_id, category_name, category_description);
     }
+
+    EXEC SQL CLOSE category_cursor;
 }
 
 void printProduct() {
@@ -155,6 +157,8 @@ void printProduct() {
         }
         printf("%d. %s - %s - %f - %d\n", product_id, product_name, product_description, product_price, product_stock_quantity);
     }
+
+    EXEC SQL CLOSE product_cursor;
 }
 
 void printWarehouse() {
@@ -181,5 +185,8 @@ void printWarehouse() {
             std::cout << "Klaida gaunant sandelius\n";
             break;
         }
-        printf("%d. %s - %d\n", warehouse_id, address, organization_id);}
+        printf("%d. %s - %d\n", warehouse_id, address, organization_id);
+    }
+
+    EXEC SQL CLOSE warehouse_cursor;
 }
