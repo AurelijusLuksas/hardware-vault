@@ -14,14 +14,13 @@ DROP TRIGGER IF EXISTS before_insert_customer ON juja0400.customer;
 DROP TRIGGER IF EXISTS before_delete_product ON juja0400.product;
 DROP TRIGGER IF EXISTS refresh_materialized_views ON juja0400.places_order;
 DROP TRIGGER IF EXISTS trg_check_order_stock ON juja0400.places_order;
-DROP TRIGGER IF EXISTS trg_check_total_stock_integrity ON juja0400.has_product;
 DROP TRIGGER IF EXISTS trg_check_min_price ON juja0400.product;
 DROP TRIGGER IF EXISTS trg_check_unique_product_name ON juja0400.product;
 DROP TRIGGER IF EXISTS trg_check_valid_email ON juja0400.supplier;
-DROP TRIGGER IF EXISTS trg_check_warehouse_count ON juja0400.organization;
 DROP TRIGGER IF EXISTS trg_prevent_pk_update ON juja0400.product;
 DROP TRIGGER IF EXISTS trg_validate_warehouse_assignment ON juja0400.employee;
 DROP TRIGGER IF EXISTS trg_prevent_inactive_product_orders ON juja0400.places_order;
+DROP TRIGGER IF EXISTS before_delete_product ON juja0400.product;
 
 -- Drop Functions
 DROP FUNCTION IF EXISTS prevent_negative_stock();
@@ -556,23 +555,6 @@ BEFORE INSERT ON juja0400.customer
 FOR EACH ROW
 EXECUTE FUNCTION set_order_count_to_zero();
 
--- Rule 12: Set has_product stock_quantity to 0 if product is deleted and delete specification.
-CREATE OR REPLACE FUNCTION set_stock_to_zero()
-RETURNS TRIGGER AS $$
-BEGIN
-    DELETE FROM juja0400.has_product
-        WHERE product_id = OLD.id;
-    DELETE FROM juja0400.specification
-        WHERE product_id = OLD.id;
-    RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER before_delete_product
-BEFORE DELETE ON juja0400.product
-FOR EACH ROW
-EXECUTE FUNCTION set_stock_to_zero();
-
 -- Rule 13: Refresh materialized views
 CREATE OR REPLACE FUNCTION refresh_materialized_views()
 RETURNS TRIGGER AS $$
@@ -605,24 +587,6 @@ BEFORE INSERT ON juja0400.places_order
 FOR EACH ROW
 EXECUTE FUNCTION check_order_stock();
 
--- Rule 15: Check total stock integrity after has_product insert or update
-CREATE OR REPLACE FUNCTION check_total_stock_integrity()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF (SELECT COALESCE(SUM(stock_quantity), 0) 
-        FROM juja0400.has_product 
-        WHERE product_id = NEW.product_id) > 
-       (SELECT stock_quantity FROM juja0400.product WHERE id = NEW.product_id) THEN
-        RAISE EXCEPTION 'Stock quantity in warehouses exceeds available product stock';
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_check_total_stock_integrity
-AFTER INSERT OR UPDATE ON juja0400.has_product
-FOR EACH ROW
-EXECUTE FUNCTION check_total_stock_integrity();
 
 -- Rule 16: Check if new price is lower than supplier delivery price
 CREATE OR REPLACE FUNCTION check_min_price()
@@ -679,22 +643,26 @@ BEFORE INSERT OR UPDATE ON juja0400.supplier
 FOR EACH ROW
 EXECUTE FUNCTION check_valid_email();
 
--- Rule 19: Check if warehouse count matches the number of linked warehouses
-CREATE OR REPLACE FUNCTION check_warehouse_count()
+-- Rule 19: Before delete product, remove specifications, suppliers, orders and specifications
+CREATE OR REPLACE FUNCTION before_delete_product()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.warehouse_count != (SELECT COUNT(*) FROM juja0400.warehouse WHERE organization_id = NEW.id) THEN
-        RAISE EXCEPTION 'Warehouse count does not match the number of linked warehouses';
-    END IF;
-
-    RETURN NEW;
+    DELETE FROM juja0400.specification WHERE product_id = OLD.id;
+    DELETE FROM juja0400.supplier WHERE product_id = OLD.id;
+    DELETE FROM juja0400.places_order WHERE product_id = OLD.id;
+    DELETE FROM juja0400.has_product WHERE product_id = OLD.id;
+    DELETE FROM juja0400.price_change_log WHERE product_id = OLD.id;
+    DELETE FROM juja0400.stock_alert WHERE product_id = OLD.id;
+    RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_check_warehouse_count
-BEFORE UPDATE ON juja0400.organization
+CREATE TRIGGER before_delete_product
+BEFORE DELETE ON juja0400.product
 FOR EACH ROW
-EXECUTE FUNCTION check_warehouse_count();
+EXECUTE FUNCTION before_delete_product();
+
+
 
 -- Rule 20: Prevent updating primary key
 CREATE OR REPLACE FUNCTION prevent_pk_update()
@@ -720,7 +688,7 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1
         FROM juja0400.warehouse
-        WHERE id = NEW.warehouse_id
+        WHERE address = NEW.warehouse_id
     ) THEN
         RAISE EXCEPTION 'Warehouse_id % does not exist', NEW.warehouse_id;
     END IF;
@@ -739,7 +707,7 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1
         FROM juja0400.product
-        WHERE id = NEW.product_id AND is_active = TRUE
+        WHERE id = NEW.product_id AND stock_quantity > 0
     ) THEN
         RAISE EXCEPTION 'Cannot order inactive product_id: %', NEW.product_id;
     END IF;
@@ -750,6 +718,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trg_prevent_inactive_product_orders
 BEFORE INSERT OR UPDATE ON juja0400.places_order
 FOR EACH ROW EXECUTE FUNCTION prevent_inactive_product_orders();
+
 
 
 -- Insert test data for Organization Table
@@ -845,10 +814,10 @@ INSERT INTO juja0400.product (category_id, name, description, price, stock_quant
 
 -- Insert test data for Supplier Table
 INSERT INTO juja0400.supplier (phone_number, email, name, rating, address, product_id, delivery_price) VALUES
-('8686865568','supplier1@example.com', 'Supplier One', 4.5, '123 Supplier St', 127, 2.78),
-('8686868686','supplier2@example.com', 'Supplier Two', 3.8, '456 Supplier St', 130, 5.15),
-('6581898455','supplier3@example.com', 'Supplier Three', 4.5, '1233 Supplier St', 131, 3.17),
-('6546588155','supplier4@example.com', 'Supplier Four', 3.8, '4526 Supplier St', 132, 1.99);
+('8686865568','supplier1@example.com', 'Supplier One', 4.5, '123 Supplier St', 1, 2.78),
+('8686868686','supplier2@example.com', 'Supplier Two', 3.8, '456 Supplier St', 2, 5.15),
+('6581898455','supplier3@example.com', 'Supplier Three', 4.5, '1233 Supplier St', 3, 3.17),
+('6546588155','supplier4@example.com', 'Supplier Four', 3.8, '4526 Supplier St', 4, 1.99);
 
 INSERT INTO juja0400.specification (name, description, value, product_id) VALUES
 ('Cores', 'Number of processor cores', '16 cores (8P + 8E)', 1),

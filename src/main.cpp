@@ -5,6 +5,7 @@
 #include <fstream>
 #include <sstream>
 #include "add_queries.h"
+#include "search_queries.h"
 
 #define MAX_PASSWORD_LENGTH 100
 
@@ -100,28 +101,29 @@ int main() {
 
                     switch (choiceFind) {
                         case 1:
-                            std::cout << "Prideti nauja produkta\n";
+                            std::cout << "Rasti darbuotoja\n";
+                            searchEmployee();
                             break;
                         case 2:
-                            std::cout << "Prideti nauja kategorija\n";
+                            std::cout << "Rasti produkta\n";
                             break;
                         case 3:
-                            std::cout << "Prideti nauja klienta\n";
+                            std::cout << "Rasti uzsakyma\n";
                             break;
                         case 4:
-                            std::cout << "Prideti nauja uzsakyma\n";
+                            std::cout << "Rasti produkto specifikacija\n";
                             break;
                         case 5:
-                            std::cout << "Prideti nauja sandeli\n";
+                            std::cout << "Rasti kategorijos produktus\n";
                             break;
                         case 6:
-                            std::cout << "Prideti nauja darbuotoja\n";
+                            std::cout << "Rasti produkto tiekejus\n";
                             break;
                         case 7:
-                            std::cout << "Prideti nauja tiekeja\n";
+                            std::cout << "Rasti produkto kieki sandelyje\n";
                             break;
                         case 8:
-                            std::cout << "Prideti nauja specifikacija\n";
+                            std::cout << "Rasti kliento uzsakymus\n";
                             break;
                         case 0:
                             std::cout << "Grizti\n";
