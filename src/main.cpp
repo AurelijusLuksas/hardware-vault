@@ -56,9 +56,6 @@ int main() {
             }
         }
     }
-    std::cout << "Username: " << username << std::endl;
-    std::cout << "Password: " << password << std::endl;
-
 
     EXEC SQL CONNECT TO studentu@localhost:5432 USER :username USING :password;
 
@@ -72,7 +69,6 @@ int main() {
         printf("SQLCODE=%ld\n", SQLCODE);
     }
 
-    EXEC SQL DISCONNECT;
 
     while (true) {
         std::cout << "[1] Duomenu paieska\n";

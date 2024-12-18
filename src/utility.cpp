@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstdlib>
 #include "add_queries.h"
+#include <print>
 
 // Utility function to get an integer input
 int getInt(const std::string& prompt) {
@@ -93,50 +94,33 @@ std::string getDate(const std::string& prompt) {
     }
 }
 
-int getId(const std::string& prompt, const std::string& tableName) {
+void printCategory() {
+    std::cout << "Galimos kategorijos:\n";
+
     EXEC SQL BEGIN DECLARE SECTION;
-    char c_tableName[100];
-    char query[200];
-    int value;
+    int category_id;
+    char category_name[100];
+    char category_description[255];
     EXEC SQL END DECLARE SECTION;
 
-    if (tableName.length() >= sizeof(c_tableName)) {
-        std::cerr << "Table name too long.\n";
-        exit(1);
-    }
+    EXEC SQL DECLARE category_cursor CURSOR FOR
+        SELECT id, name, description FROM category;
 
-    strncpy(c_tableName, tableName.c_str(), sizeof(c_tableName) - 1);
-    c_tableName[sizeof(c_tableName) - 1] = '\0';
-
-    snprintf(query, sizeof(query), "SELECT * FROM %s", c_tableName);
-
-    EXEC SQL PREPARE dyn_query FROM :query;
-
-    // Execute the query
-    EXEC SQL DECLARE cursor_name CURSOR FOR dyn_query;
-    EXEC SQL OPEN cursor_name;
-
-    std::cout << "Available IDs in " << tableName << ":\n";
-    while (true) {
-        EXEC SQL FETCH cursor_name INTO :value;
-        if (SQLCODE != 0) break;
-        std::cout << value << std::endl;
-    }
-
-    EXEC SQL CLOSE cursor_name;
-
-    // Get user input for the ID
-    while (true) {
-        std::cout << prompt;
-        std::cin >> value;
-
-        if (std::cin.fail()) {
-            std::cin.clear(); // Clear the error flag
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Discard invalid input
-            std::cout << "Netinkamas ID. Bandykite dar karta.\n";
-        } else {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear extra input
-            return value;
+    EXEC SQL OPEN category_cursor;
+    
+    while(true) {
+        EXEC SQL FETCH category_cursor INTO :category_id, :category_name, :category_description;
+        if (SQLCODE == 100) { // No more data
+            break;
+        } else if (SQLCODE != 0) { // Error
+            std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
+            std::print("{}", sqlca.sqlerrm.sqlerrmc);
+            std::cout << "Klaida gaunant kategorijas\n";
+            break;
         }
+        std::cout << "AAAAAA\n";
+        printf("%d. %s - %s\n", category_id, category_name, category_description);
     }
+
+
 }
