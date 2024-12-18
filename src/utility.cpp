@@ -94,6 +94,11 @@ std::string getDate(const std::string& prompt) {
     }
 }
 
+void copyStr(const std::string &str, char* c_str, size_t size) {
+    auto copied = str.copy(c_str, size);
+    c_str[copied] = '\0';
+}
+
 void printCategory() {
     std::cout << "Galimos kategorijos:\n";
 

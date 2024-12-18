@@ -1065,9 +1065,6 @@ INSERT INTO juja0400.employee (position, years_of_experience, contact_info, ware
 ('Worker', 2, 'worker2@example.com', '789 Oak St', 'Alice', 'Johnson'),
 ('Manager', 3, 'manager2@example.com', '789 Oak St', 'Bob', 'Williams');
 
--- ('123 Main St', 1),
--- ('456 Elm St', 1),
--- ('789 Oak St', 1);
 -- Insert test data for Customer Table
 INSERT INTO juja0400.customer (contact_info, first_name, last_name) VALUES
 ('customer1@example.com', 'Alice', 'Johnson'),

@@ -3,5 +3,5 @@
 
 void copyStr2(const std::string &str, char* c_str, size_t size);
 void searchEmployee();
-
+void searchProduct();
 #endif // QUERIES_H

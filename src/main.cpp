@@ -106,6 +106,7 @@ int main() {
                             break;
                         case 2:
                             std::cout << "Rasti produkta\n";
+                            searchProduct();
                             break;
                         case 3:
                             std::cout << "Rasti uzsakyma\n";

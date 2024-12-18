@@ -1,11 +1,6 @@
 #include <iostream>
 #include "utility.h"
 
-void copyStr(const std::string &str, char* c_str, size_t size) {
-    auto copied = str.copy(c_str, size);
-    c_str[copied] = '\0';
-}
-
 void addProduct() {
     EXEC SQL BEGIN DECLARE SECTION;
     int c_category_id;
