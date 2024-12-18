@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
+#include "add_queries.h"
 
 #define MAX_PASSWORD_LENGTH 100
 
@@ -84,6 +85,7 @@ int main() {
                     switch (choiceFind) {
                         case 1:
                             std::cout << "Prideti nauja produkta\n";
+
                             break;
                         case 2:
                             std::cout << "Prideti nauja kategorija\n";
@@ -138,7 +140,8 @@ int main() {
 
                     switch (choiceAdd) {
                         case 1:
-                            std::cout << "Prideti nauja produkta\n";
+                            
+                            addProduct(1, "Produktas", "Produkto aprasymas", 10.0, 100);
                             break;
                         case 2:
                             std::cout << "Prideti nauja kategorija\n";
