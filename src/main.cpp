@@ -110,12 +110,15 @@ int main() {
                             break;
                         case 3:
                             std::cout << "Rasti uzsakyma\n";
+                            searchOrder();
                             break;
                         case 4:
                             std::cout << "Rasti produkto specifikacija\n";
+                            searchProductSpecification();
                             break;
                         case 5:
                             std::cout << "Rasti kategorijos produktus\n";
+                            searchProductsOfCategory();
                             break;
                         case 6:
                             std::cout << "Rasti produkto tiekejus\n";

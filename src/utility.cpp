@@ -126,4 +126,6 @@ void printCategory() {
         std::cout << "AAAAAA\n";
         printf("%d. %s - %s\n", category_id, category_name, category_description);
     }
+
+    EXEC SQL CLOSE category_cursor;
 }

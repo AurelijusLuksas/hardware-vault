@@ -4,4 +4,8 @@
 void copyStr2(const std::string &str, char* c_str, size_t size);
 void searchEmployee();
 void searchProduct();
+void searchOrder();
+void searchProductSpecification();
+void searchProductsOfCategory();
+
 #endif // QUERIES_H

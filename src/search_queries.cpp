@@ -151,5 +151,122 @@ void searchProduct() {
         }
     }
     EXEC SQL CLOSE product_cursor;
+}
 
+void searchOrder() {
+    EXEC SQL BEGIN DECLARE SECTION;
+    int c_id;
+    char c_customer_id[100];
+    int c_product_id;
+    float c_price;
+    char c_date[100];
+    int c_quantity;
+    EXEC SQL END DECLARE SECTION;
+
+    std::string date = getDate("Iveskite uzsakymo data: ");
+    copyStr(date, c_date, sizeof(c_date));
+
+    EXEC SQL DECLARE order_cursor CURSOR FOR
+    SELECT id, customer_id, product_id, price, date, count FROM places_order WHERE date = :c_date;
+    EXEC SQL OPEN order_cursor;
+
+    while (true) {
+        EXEC SQL FETCH order_cursor INTO :c_id, :c_customer_id, :c_product_id, :c_price, :c_date, :c_quantity;
+        if (SQLCODE == 100) {
+            break;
+        }
+        if (SQLCODE != 0) {
+            std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
+            std::print("{}", sqlca.sqlerrm.sqlerrmc);
+            std::cout << "Klaida gaunant uzsakyma\n";
+            EXEC SQL ROLLBACK;
+            break;
+        } else {
+            std::cout << "Uzsakymas:\n";
+            std::cout << "ID: " << c_id << std::endl;
+            std::cout << "Kliento ID: " << c_customer_id << std::endl;
+            std::cout << "Produkto ID: " << c_product_id << std::endl;
+            std::cout << "Uzsakymo kaina: " << c_price << std::endl;
+            std::cout << "Uzsakymo data: " << c_date << std::endl;
+            std::cout << "Uzsakyto produkto kiekis: " << c_quantity << std::endl;
+            break;
+        }
+    }
+    EXEC SQL CLOSE order_cursor;
+}
+
+void searchProductSpecification() {
+    EXEC SQL BEGIN DECLARE SECTION;
+    int c_id;
+    char c_name[100];
+    char c_description[255];
+    char c_value[255];
+    int c_product_id;
+    EXEC SQL END DECLARE SECTION;
+
+    int product_id = getInt("Iveskite produkto ID, kurio specifikacija norima pamatyti: ");
+    c_product_id = product_id;
+
+    EXEC SQL DECLARE specification_cursor CURSOR FOR
+    SELECT id, name, description, value, product_id FROM specification WHERE product_id = :c_product_id;
+    EXEC SQL OPEN specification_cursor;
+
+    while (true) {
+        EXEC SQL FETCH specification_cursor INTO :c_id, :c_name, :c_description, :c_value, :c_product_id;
+        if (SQLCODE == 100) {
+            break;
+        }
+        if (SQLCODE != 0) {
+            std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
+            std::print("{}", sqlca.sqlerrm.sqlerrmc);
+            std::cout << "Klaida gaunant produkto specifikacija\n";
+            EXEC SQL ROLLBACK;
+            break;
+        } else {
+            std::cout << "Specifikacija: " << c_name << " " << c_description << " " << c_value << std::endl;
+            break;
+        }
+    }
+    EXEC SQL CLOSE specification_cursor;
+}
+
+void searchProductsOfCategory() {
+    EXEC SQL BEGIN DECLARE SECTION;
+    int c_id;
+    int c_category_id;
+    char c_name[100];
+    char c_description[255];
+    double c_price;
+    int c_stock_quantity;
+    EXEC SQL END DECLARE SECTION;
+
+    printCategory();
+
+
+    int category_id = getInt("Iveskite kategorijos ID, kurios produktus norite pamatyti: ");
+    c_category_id = category_id;
+
+    EXEC SQL DECLARE product_category CURSOR FOR
+
+    SELECT id, category_id, name, description, price, stock_quantity FROM product WHERE category_id = :c_category_id;
+    EXEC SQL OPEN product_category;
+    
+    while (true) {
+        EXEC SQL FETCH product_category INTO :c_id, :c_category_id, :c_name, :c_description, :c_price, :c_stock_quantity;
+        if (SQLCODE == 100) {
+            break;
+        }
+        if (SQLCODE != 0) {
+            std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
+            std::print("{}", sqlca.sqlerrm.sqlerrmc);
+            std::cout << "Klaida gaunant produkta\n";
+            EXEC SQL ROLLBACK;
+            break;
+        } else {
+            std::cout << "Produktas:\n";
+            std::cout << "ID: " << c_id << std::endl;
+            std::cout << "Pavadinimas: " << c_name << std::endl;
+        }
+    }
+    EXEC SQL CLOSE product_category;
 }
