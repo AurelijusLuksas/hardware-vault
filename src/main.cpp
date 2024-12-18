@@ -76,7 +76,7 @@ int main() {
         std::cout << "[2] Duomenu ivedimas\n";
         std::cout << "[3] Duomenu atnaujinimas\n";
         std::cout << "[4] Duomenu trynimas\n";
-        std::cout << "[5] Isjungti\n";
+        std::cout << "[0] Isjungti\n";
 
         int choice;
         std::cin >> choice;
@@ -158,29 +158,28 @@ int main() {
 
                     switch (choiceAdd) {
                         case 1:
-                            std::cout << "Prideti nauja produkta\n";
                             addProduct();
                             break;
                         case 2:
-                            std::cout << "Prideti nauja kategorija\n";
+                            addCategory();
                             break;
                         case 3:
-                            std::cout << "Prideti nauja klienta\n";
+                            addCustomer();
                             break;
                         case 4:
-                            std::cout << "Prideti nauja uzsakyma\n";
+                            addOrder();
                             break;
                         case 5:
-                            std::cout << "Prideti nauja sandeli\n";
+                            addWarehouse();
                             break;
                         case 6:
-                            std::cout << "Prideti nauja darbuotoja\n";
+                            addEmployee();
                             break;
                         case 7:
-                            std::cout << "Prideti nauja tiekeja\n";
+                            addSupplier();
                             break;
                         case 8:
-                            std::cout << "Prideti nauja specifikacija\n";
+                            addSpecification();
                             break;
                         case 0:
                             std::cout << "Grizti\n";
@@ -253,7 +252,7 @@ int main() {
             case 4:
                 std::cout << "Duomenu trynimas\n";
                 break;
-            case 5:
+            case 0:
                 std::cout << "Isjungti\n";
                 return 0;
             default:
