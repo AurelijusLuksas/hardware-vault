@@ -7,29 +7,9 @@
 #include "add_queries.h"
 #include "search_queries.h"
 #include "remove_queries.h"
+#include "update_queries.h"
 
 #define MAX_PASSWORD_LENGTH 100
-
-char* getpass(const char* prompt) {
-    static char password[MAX_PASSWORD_LENGTH];
-    std::cout << prompt;
-    int i = 0;
-    while (i < MAX_PASSWORD_LENGTH - 1) {
-        char ch = _getch();
-        if (ch == '\r' || ch == '\n') {
-            break;
-        } else if (ch == '\b' && i > 0) {
-            std::cout << "\b \b";
-            i--;
-        } else {
-            password[i++] = ch;
-            std::cout << '*';
-        }
-    }
-    password[i] = '\0';
-    std::cout << std::endl;
-    return password;
-}
 
 EXEC SQL BEGIN DECLARE SECTION;
 int result;
@@ -40,9 +20,6 @@ EXEC SQL END DECLARE SECTION;
 int main() {
     printf("Programa pradeda darba\n");
 
-    // char* pwd = getpass("Iveskite slaptazodi: ");
-    // strncpy(password, pwd, sizeof(password) - 1);
-    // password[sizeof(password) - 1] = '\0';
     std::ifstream envFile(".env");
     std::string line;
     while (std::getline(envFile, line)) {
@@ -61,12 +38,9 @@ int main() {
 
     EXEC SQL CONNECT TO studentu@localhost:5432 USER :username USING :password;
 
-    printf("CONNECT TO biblio. SQLCODE=%ld\n", SQLCODE);
+    printf("CONNECT TO %s. SQLCODE=%ld\n", username, SQLCODE);
     if (0 == SQLCODE) {
-        EXEC SQL SELECT COUNT(*) INTO :result FROM product;
-    }
-    if (0 == SQLCODE) {
-        printf("Programa veikia! Produktu skaicius=%d\n", result);
+        printf("Prisijungta prie duomenu bazes. Galite pradeti darba.\n");
     } else {
         printf("SQLCODE=%ld\n", SQLCODE);
     }
@@ -93,7 +67,7 @@ int main() {
                     std::cout << "[4] Rasti produkto specifikacija\n";
                     std::cout << "[5] Rasti kategorijos produktus\n";
                     std::cout << "[6] Rasti produkto tiekejus\n";
-                    std::cout << "[7] Rasti produkto kieki sandelyje";
+                    std::cout << "[7] Rasti produkto kieki sandelyje\n";
                     std::cout << "[8] Rasti kliento uzsakymus\n";
                     std::cout << "[0] Grizti\n";
 
@@ -117,15 +91,12 @@ int main() {
                             searchProductsOfCategory();
                             break;
                         case 6:
-                            std::cout << "Rasti produkto tiekejus\n";
                             searchProductSupplier();
                             break;
                         case 7:
-                            std::cout << "Rasti produkto kieki sandelyje\n";
                             searchProductWarehouse();
                             break;
                         case 8:
-                            std::cout << "Rasti kliento uzsakymus\n";
                             searchCustomerOrders();
                             break;
                         case 0:
@@ -215,7 +186,7 @@ int main() {
 
                     switch (choiceUpdate) {
                         case 1:
-                            std::cout << "Prideti nauja produkta\n";
+                            updateProductPrice();
                             break;
                         case 2:
                             std::cout << "Prideti nauja kategorija\n";
