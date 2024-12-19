@@ -75,7 +75,7 @@ void searchProductSpecification(int id) {
             std::cout << "Klaida gaunant produkto specifikacija\n";
             break;
         } else {
-            std::cout << "Specifikacija: " << c_name << " " << c_description << " " << c_value << std::endl;
+            std::cout << c_name << " / " << c_description << " / " << c_value << std::endl;
             std::cout << "-------------------\n";
         }
     }
@@ -152,8 +152,8 @@ void searchProduct() {
             std::cout << "Aprasymas: " << c_description << std::endl;
             std::cout << "Kaina: " << c_price << std::endl;
             std::cout << "Kiekis: " << c_stock_quantity << std::endl;
+            std::cout << "Specifikacijos: " << std::endl;
             searchProductSpecification(c_id);
-            std::cout << "-------------------\n";
             break;
         }
     }
@@ -233,8 +233,8 @@ void searchProductSpecification() {
             std::cout << "Klaida gaunant produkto specifikacija\n";
             break;
         } else {
-            std::cout << "Specifikacija: " << c_name << " " << c_description << " " << c_value << std::endl;
-            std::cout << "-------------------\n";
+            std::cout << "Specifikacija:\n";
+            searchProductSpecification(c_id);
             break;
         }
     }

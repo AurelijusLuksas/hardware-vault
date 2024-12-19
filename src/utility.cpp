@@ -10,6 +10,7 @@
 
 // Utility function to get an integer input
 int getInt(const std::string& prompt) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     int value;
     while (true) {
         std::cout << prompt;
@@ -28,6 +29,7 @@ int getInt(const std::string& prompt) {
 
 // Utility function to get a float input
 float getFloat(const std::string& prompt) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     float value;
     while (true) {
         std::cout << prompt;
@@ -46,6 +48,7 @@ float getFloat(const std::string& prompt) {
 
 // Utility function to get a double input
 double getDouble(const std::string& prompt) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     double value;
     while (true) {
         std::cout << prompt;
@@ -64,11 +67,10 @@ double getDouble(const std::string& prompt) {
 
 // Utility function to get a string input
 std::string getString(const std::string& prompt) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::string value;
     std::cout << prompt;
     std::getline(std::cin, value);
-
-    // Ensure input is not empty
     while (value.empty()) {
         std::cout << "Ivestis negali buti tuscia. Bandykite dar karta.\n";
         std::cout << prompt;
@@ -79,6 +81,7 @@ std::string getString(const std::string& prompt) {
 
 // Utility function to get a date input (YYYY-MM-DD format)
 std::string getDate(const std::string& prompt) {
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     std::string value;
     std::regex datePattern(R"(^\d{4}-\d{2}-\d{2}$)"); // Regex for YYYY-MM-DD format
 

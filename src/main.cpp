@@ -260,7 +260,7 @@ int main() {
                 std::cout << "Duomenu perziurejimas\n";
                 while (true) {
                     std::cout << "-------------------\n";
-                    std::cout << "[1] Produktai, kuriu yra mazai sandelyje\n";
+                    std::cout << "[1] Produktai, kuriu yra visuose sandeliuose\n";
                     std::cout << "[2] Tiekejai pagal reitinga\n";
                     std::cout << "[3] Aktyvus produktai\n";
                     std::cout << "[4] Auksto reitingo tiekejai\n";
