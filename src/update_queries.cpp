@@ -22,7 +22,6 @@ void updateProductPrice() {
         std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "Klaida atnaujinant produkto kaina\n";
-        EXEC SQL ROLLBACK;
     } else {
         std::cout << "Produkto kaina atnaujinta\n";
         EXEC SQL COMMIT;
@@ -49,7 +48,6 @@ void updateProductQuantity() {
     EXEC SQL SELECT stock_quantity INTO :old_stock_quantity FROM product WHERE id = :c_product_id;
     EXEC SQL UPDATE product SET stock_quantity = :c_stock_quantity WHERE id = :c_product_id;
     difference = c_stock_quantity - old_stock_quantity;
-    std::cout << "Difference: " << difference << std::endl;
     // Declare and open the cursor for warehouses
     EXEC SQL DECLARE warehouse_cursor CURSOR FOR 
         SELECT warehouse_id, stock_quantity FROM has_product WHERE product_id = :c_product_id ORDER BY stock_quantity ASC;
@@ -59,7 +57,6 @@ void updateProductQuantity() {
      // No more rows
 
         if (difference > 0) {
-            std::cout << "Difference loope: " << difference << std::endl;
             // Add stock to this warehouse
             EXEC SQL UPDATE has_product SET stock_quantity = stock_quantity + :difference 
                 WHERE product_id = :c_product_id AND warehouse_id = :warehouse_id;
