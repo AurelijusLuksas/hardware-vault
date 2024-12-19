@@ -23,7 +23,6 @@ void viewLowStockProducts() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant mazo atsargu kiekio produktus\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Produktas:\n";
@@ -58,7 +57,6 @@ void viewSuppliersByRating() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant tiekejus pagal reitinga\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Tiekejas:\n";
@@ -94,7 +92,6 @@ void viewActiveProducts() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant aktyvius produktus\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Produktas:\n";
@@ -128,7 +125,6 @@ void viewHighRatedSuppliers() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant aukstai ivertintus tiekejus\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Tiekejas:\n";
@@ -162,7 +158,6 @@ void viewLowStockProductsInWarehouse() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant mazo atsargu kiekio produktus sandelyje\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Produktas sandelyje:\n";
@@ -197,7 +192,6 @@ void viewLowestDeliveryPrice() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant maziausia pristatymo kaina\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Tiekejas:\n";
@@ -232,7 +226,6 @@ void viewProductStockSummary() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant produktu atsargu suvestine\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Produkto atsargu suvestine:\n";
@@ -266,7 +259,6 @@ void viewProductRevenueLastWeek() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant produktu pajamas per praejusia savaite\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Produkto pajamos per praejusia savaite:\n";

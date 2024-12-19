@@ -31,7 +31,6 @@ void searchEmployee() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant darbuotoja\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Darbuotojas:\n";
@@ -73,7 +72,6 @@ void searchProductSpecification(int id) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant produkto specifikacija\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Specifikacija: " << c_name << " " << c_description << " " << c_value << std::endl;
@@ -106,7 +104,6 @@ std::string getCategory(int id) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant kategorija\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             return c_name;
@@ -144,7 +141,6 @@ void searchProduct() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant produkta\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Produktas:\n";
@@ -189,7 +185,6 @@ void searchOrder() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant uzsakyma\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Uzsakymas:\n";
@@ -232,7 +227,6 @@ void searchProductSpecification() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant produkto specifikacija\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Specifikacija: " << c_name << " " << c_description << " " << c_value << std::endl;
@@ -273,7 +267,6 @@ void searchProductsOfCategory() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant produkta\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Produktas:\n";
@@ -314,7 +307,6 @@ void searchProductSupplier() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant produkto tiekejus\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Tiekejas:\n";
@@ -360,7 +352,6 @@ void searchProductWarehouse() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant produkto sandelius\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Sandelys:\n";
@@ -403,7 +394,6 @@ void searchCustomerOrders() {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
             std::cout << "Klaida gaunant klienta\n";
-            EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Uzsakymas:\n";
