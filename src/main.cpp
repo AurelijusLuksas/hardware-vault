@@ -9,6 +9,7 @@
 #include "remove_queries.h"
 #include "update_queries.h"
 #include "view_queries.h"
+#include "update_materialized_queries.h"
 
 #define MAX_PASSWORD_LENGTH 100
 
@@ -181,6 +182,8 @@ int main() {
                     std::cout << "[6] Pakeisti vartotojo varda\n";
                     std::cout << "[7] Pakeisti produkto specifikacija\n";
                     std::cout << "[8] Pakeisti tiekejo pristatymo kaina\n";
+                    std::cout << "[9] Atnaujinti produktų atsargų suvestinę\n";
+                    std::cout << "[10] Atnaujinti produktų pajamas per paskutinę savaitę\n";
                     std::cout << "[0] Grizti\n";
 
                     int choiceUpdate;
@@ -210,6 +213,12 @@ int main() {
                             break;
                         case 8:
                             std::cout << "Prideti nauja specifikacija\n";
+                            break;
+                        case 9:
+                            updateMaterializedProductStockSummary();
+                            break;
+                        case 10:
+                            updateMaterializedProductRevenueLastWeek();
                             break;
                         case 0:
                             std::cout << "Grizti\n";
