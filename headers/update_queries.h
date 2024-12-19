@@ -4,6 +4,6 @@
 
 void updateProductPrice();
 void updateProductQuantity();
-
+void updateProductCountInOrder();
 
 #endif // UPDATE_QUERIES_H

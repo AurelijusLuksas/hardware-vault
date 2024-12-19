@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++23 -Wall -Wextra -Wpedantic -flto -O3 -I/usr/include/postgresql -Iheaders
+CFLAGS = -std=c++23 -Wall -Wextra -Wpedantic -flto -I/usr/include/postgresql -Iheaders
 LFLAGS = -lstdc++exp -L/usr/lib/ -lecpg
 SRC = $(wildcard src/*.cpp)
 SRC_BUILD = $(SRC:src/%.cpp=build/%.cpp)

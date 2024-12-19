@@ -1,26 +1,26 @@
 -- Drop and recreate the schema
 -- Drop Triggers
-DROP TRIGGER IF EXISTS trg_prevent_negative_stock ON juja0400.has_product;
-DROP TRIGGER IF EXISTS trg_update_warehouse_count ON juja0400.warehouse;
-DROP TRIGGER IF EXISTS trg_log_price_change ON juja0400.product;
-DROP TRIGGER IF EXISTS trg_update_order_count ON juja0400.places_order;
-DROP TRIGGER IF EXISTS trg_stock_replenishment_alert ON juja0400.has_product;
-DROP TRIGGER IF EXISTS set_order_price ON juja0400.places_order;
-DROP TRIGGER IF EXISTS before_place_order ON juja0400.places_order;
-DROP TRIGGER IF EXISTS after_replenish_stock ON juja0400.product;
-DROP TRIGGER IF EXISTS trg_check_product_exists ON juja0400.specification;
-DROP TRIGGER IF EXISTS trg_check_warehouse_exists ON juja0400.employee;
-DROP TRIGGER IF EXISTS before_insert_customer ON juja0400.customer;
-DROP TRIGGER IF EXISTS before_delete_product ON juja0400.product;
-DROP TRIGGER IF EXISTS refresh_materialized_views ON juja0400.places_order;
-DROP TRIGGER IF EXISTS trg_check_order_stock ON juja0400.places_order;
-DROP TRIGGER IF EXISTS trg_check_min_price ON juja0400.product;
-DROP TRIGGER IF EXISTS trg_check_unique_product_name ON juja0400.product;
-DROP TRIGGER IF EXISTS trg_check_valid_email ON juja0400.supplier;
-DROP TRIGGER IF EXISTS trg_prevent_pk_update ON juja0400.product;
-DROP TRIGGER IF EXISTS trg_validate_warehouse_assignment ON juja0400.employee;
-DROP TRIGGER IF EXISTS trg_prevent_inactive_product_orders ON juja0400.places_order;
-DROP TRIGGER IF EXISTS before_delete_product ON juja0400.product;
+DROP TRIGGER IF EXISTS trg_prevent_negative_stock ON aulu0471.has_product;
+DROP TRIGGER IF EXISTS trg_update_warehouse_count ON aulu0471.warehouse;
+DROP TRIGGER IF EXISTS trg_log_price_change ON aulu0471.product;
+DROP TRIGGER IF EXISTS trg_update_order_count ON aulu0471.places_order;
+DROP TRIGGER IF EXISTS trg_stock_replenishment_alert ON aulu0471.has_product;
+DROP TRIGGER IF EXISTS set_order_price ON aulu0471.places_order;
+DROP TRIGGER IF EXISTS before_place_order ON aulu0471.places_order;
+DROP TRIGGER IF EXISTS after_replenish_stock ON aulu0471.product;
+DROP TRIGGER IF EXISTS trg_check_product_exists ON aulu0471.specification;
+DROP TRIGGER IF EXISTS trg_check_warehouse_exists ON aulu0471.employee;
+DROP TRIGGER IF EXISTS before_insert_customer ON aulu0471.customer;
+DROP TRIGGER IF EXISTS before_delete_product ON aulu0471.product;
+DROP TRIGGER IF EXISTS refresh_materialized_views ON aulu0471.places_order;
+DROP TRIGGER IF EXISTS trg_check_order_stock ON aulu0471.places_order;
+DROP TRIGGER IF EXISTS trg_check_min_price ON aulu0471.product;
+DROP TRIGGER IF EXISTS trg_check_unique_product_name ON aulu0471.product;
+DROP TRIGGER IF EXISTS trg_check_valid_email ON aulu0471.supplier;
+DROP TRIGGER IF EXISTS trg_prevent_pk_update ON aulu0471.product;
+DROP TRIGGER IF EXISTS trg_validate_warehouse_assignment ON aulu0471.employee;
+DROP TRIGGER IF EXISTS trg_prevent_inactive_product_orders ON aulu0471.places_order;
+DROP TRIGGER IF EXISTS before_delete_product ON aulu0471.product;
 
 -- Drop Functions
 DROP FUNCTION IF EXISTS prevent_negative_stock();
@@ -45,16 +45,16 @@ DROP FUNCTION IF EXISTS validate_warehouse_assignment();
 DROP FUNCTION IF EXISTS prevent_inactive_product_orders();
 
 -- Drop Materialized Views
-DROP MATERIALIZED VIEW IF EXISTS juja0400.product_stock_summary;
-DROP MATERIALIZED VIEW IF EXISTS juja0400.all_product_revenue;
+DROP MATERIALIZED VIEW IF EXISTS aulu0471.product_stock_summary;
+DROP MATERIALIZED VIEW IF EXISTS aulu0471.all_product_revenue;
 
 -- Drop Views
-DROP VIEW IF EXISTS juja0400.low_stock_products;
-DROP VIEW IF EXISTS juja0400.suppliers_by_rating;
-DROP VIEW IF EXISTS juja0400.active_products;
-DROP VIEW IF EXISTS juja0400.high_rated_suppliers;
-DROP VIEW IF EXISTS juja0400.low_stock_products_in_warehouse;
-DROP VIEW IF EXISTS juja0400.lowest_delivery_price;
+DROP VIEW IF EXISTS aulu0471.low_stock_products;
+DROP VIEW IF EXISTS aulu0471.suppliers_by_rating;
+DROP VIEW IF EXISTS aulu0471.active_products;
+DROP VIEW IF EXISTS aulu0471.high_rated_suppliers;
+DROP VIEW IF EXISTS aulu0471.low_stock_products_in_warehouse;
+DROP VIEW IF EXISTS aulu0471.lowest_delivery_price;
 
 -- Drop Indexes
 DROP INDEX IF EXISTS idx_employee_fullname;
@@ -68,54 +68,54 @@ DROP INDEX IF EXISTS idx_supplier_rating;
 DROP INDEX IF EXISTS idx_product_price;
 
 -- Drop Tables
-DROP TABLE IF EXISTS juja0400.price_change_log;
-DROP TABLE IF EXISTS juja0400.stock_alert;
-DROP TABLE IF EXISTS juja0400.supplier;
-DROP TABLE IF EXISTS juja0400.specification;
-DROP TABLE IF EXISTS juja0400.has_product;
-DROP TABLE IF EXISTS juja0400.places_order;
-DROP TABLE IF EXISTS juja0400.customer;
-DROP TABLE IF EXISTS juja0400.employee;
-DROP TABLE IF EXISTS juja0400.warehouse;
-DROP TABLE IF EXISTS juja0400.organization;
-DROP TABLE IF EXISTS juja0400.product;
-DROP TABLE IF EXISTS juja0400.category;
+DROP TABLE IF EXISTS aulu0471.price_change_log;
+DROP TABLE IF EXISTS aulu0471.stock_alert;
+DROP TABLE IF EXISTS aulu0471.supplier;
+DROP TABLE IF EXISTS aulu0471.specification;
+DROP TABLE IF EXISTS aulu0471.has_product;
+DROP TABLE IF EXISTS aulu0471.places_order;
+DROP TABLE IF EXISTS aulu0471.customer;
+DROP TABLE IF EXISTS aulu0471.employee;
+DROP TABLE IF EXISTS aulu0471.warehouse;
+DROP TABLE IF EXISTS aulu0471.organization;
+DROP TABLE IF EXISTS aulu0471.product;
+DROP TABLE IF EXISTS aulu0471.category;
 
 
 -- 1. Category Table
-CREATE TABLE juja0400.category (
+CREATE TABLE aulu0471.category (
     id SERIAL PRIMARY KEY, -- Automatic identity
     name VARCHAR(255) NOT NULL,
     description TEXT
 );
 
 -- 2. Product Table
-CREATE TABLE juja0400.product (
+CREATE TABLE aulu0471.product (
     id SERIAL PRIMARY KEY, -- Automatic identity
     category_id INTEGER NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     price DECIMAL(10, 2) NOT NULL CHECK (price >= 0), -- Declarative constraint: price must be non-negative
     stock_quantity INTEGER CHECK (stock_quantity >= 0), -- Declarative constrasint: stock_quantity must be non-negative
-    FOREIGN KEY (category_id) REFERENCES juja0400.category(id)
+    FOREIGN KEY (category_id) REFERENCES aulu0471.category(id)
 );
 
 -- 3. Organization Table
-CREATE TABLE juja0400.organization (
+CREATE TABLE aulu0471.organization (
     id SERIAL PRIMARY KEY, -- Automatic identity
     warehouse_count INTEGER DEFAULT 0 CHECK (warehouse_count >= 0) -- Default value and declarative constraint
 );
 
 -- 4. Warehouse Table
-CREATE TABLE juja0400.warehouse (
+CREATE TABLE aulu0471.warehouse (
     id SERIAL PRIMARY KEY, -- Automatic identity
     address VARCHAR(255) NOT NULL UNIQUE,
     organization_id INTEGER NOT NULL,
-    FOREIGN KEY (organization_id) REFERENCES juja0400.organization(id)
+    FOREIGN KEY (organization_id) REFERENCES aulu0471.organization(id)
 );
 
 -- 5. Employee Table
-CREATE TABLE juja0400.employee (
+CREATE TABLE aulu0471.employee (
     id SERIAL PRIMARY KEY, -- Automatic identity
     position VARCHAR(255),
     years_of_experience INTEGER CHECK (years_of_experience >= 0), -- Declarative constraint: non-negative experience
@@ -123,11 +123,11 @@ CREATE TABLE juja0400.employee (
     warehouse_id VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    FOREIGN KEY (warehouse_id) REFERENCES juja0400.warehouse(address)
+    FOREIGN KEY (warehouse_id) REFERENCES aulu0471.warehouse(address)
 );
 
 -- 6. Customer Table
-CREATE TABLE juja0400.customer (
+CREATE TABLE aulu0471.customer (
     id SERIAL PRIMARY KEY, -- Automatic identity
     order_count INTEGER DEFAULT 0 CHECK (order_count >= 0), -- Default value and declarative constraint
     contact_info VARCHAR(255) UNIQUE NOT NULL,
@@ -136,39 +136,39 @@ CREATE TABLE juja0400.customer (
 );
 
 -- 7. Places Order Table
-CREATE TABLE juja0400.places_order (
+CREATE TABLE aulu0471.places_order (
     id SERIAL PRIMARY KEY, -- Automatic identity
     customer_id VARCHAR(255) NOT NULL,
     product_id INTEGER NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     date DATE DEFAULT CURRENT_DATE, -- Default value for date
     count INTEGER CHECK (count > 0), -- Declarative constraint: order count must be positive
-    FOREIGN KEY (customer_id) REFERENCES juja0400.customer(contact_info),
-    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
+    FOREIGN KEY (customer_id) REFERENCES aulu0471.customer(contact_info),
+    FOREIGN KEY (product_id) REFERENCES aulu0471.product(id)
 );
 
 -- 8. Has Product Table
-CREATE TABLE juja0400.has_product (
+CREATE TABLE aulu0471.has_product (
     warehouse_id INTEGER NOT NULL,
     product_id INTEGER NOT NULL,
     stock_quantity INTEGER CHECK (stock_quantity >= 0),
     PRIMARY KEY (warehouse_id, product_id), -- Composite primary key
-    FOREIGN KEY (warehouse_id) REFERENCES juja0400.warehouse(id),
-    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
+    FOREIGN KEY (warehouse_id) REFERENCES aulu0471.warehouse(id),
+    FOREIGN KEY (product_id) REFERENCES aulu0471.product(id)
 );
 
 -- 9. Specification Table
-CREATE TABLE juja0400.specification (
+CREATE TABLE aulu0471.specification (
     id SERIAL PRIMARY KEY, -- Automatic identity
     name VARCHAR(255) NOT NULL,
     description TEXT,
     value VARCHAR(255),
     product_id INTEGER NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
+    FOREIGN KEY (product_id) REFERENCES aulu0471.product(id)
 );
 
 -- 10. Supplier Table (Updated for One-to-Many Relationship with Product)
-CREATE TABLE juja0400.supplier (
+CREATE TABLE aulu0471.supplier (
     id SERIAL PRIMARY KEY, -- Automatic identity
     phone_number VARCHAR(255) CHECK (phone_number ~ '^[0-9+]+$'),
     email VARCHAR(255) CHECK (email LIKE '%@%'),
@@ -177,105 +177,105 @@ CREATE TABLE juja0400.supplier (
     address VARCHAR(255),
     product_id INTEGER NOT NULL, -- Foreign key to product (one-to-many)
     delivery_price DECIMAL(10, 2) CHECK (delivery_price >= 0), -- Declarative constraint: non-negative delivery price
-    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
+    FOREIGN KEY (product_id) REFERENCES aulu0471.product(id)
 );
 
 -- 11. Price Change Log Table (for Trigger)
-CREATE TABLE juja0400.price_change_log (
+CREATE TABLE aulu0471.price_change_log (
     id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL,
     old_price DECIMAL(10, 2),
     new_price DECIMAL(10, 2),
     change_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
+    FOREIGN KEY (product_id) REFERENCES aulu0471.product(id)
 );
 
 -- 12. Stock Alert Table (for Trigger)
-CREATE TABLE juja0400.stock_alert (
+CREATE TABLE aulu0471.stock_alert (
     id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL,
     alert_date DATE DEFAULT CURRENT_DATE,
     alert_message TEXT,
-    FOREIGN KEY (product_id) REFERENCES juja0400.product(id)
+    FOREIGN KEY (product_id) REFERENCES aulu0471.product(id)
 );
 
 -- 13. Create Indexes
-CREATE INDEX idx_employee_fullname ON juja0400.employee (first_name, last_name); -- Composite index
-CREATE INDEX idx_customer_fullname ON juja0400.customer (first_name, last_name); -- Composite index
+CREATE INDEX idx_employee_fullname ON aulu0471.employee (first_name, last_name); -- Composite index
+CREATE INDEX idx_customer_fullname ON aulu0471.customer (first_name, last_name); -- Composite index
 
-CREATE UNIQUE INDEX idx_product_name ON juja0400.product (name);
-CREATE UNIQUE INDEX idx_category_name ON juja0400.category (name);
-CREATE UNIQUE INDEX idx_warehouse_address ON juja0400.warehouse (address);
-CREATE UNIQUE INDEX idx_supplier_contact_info ON juja0400.supplier (phone_number, email); 
+CREATE UNIQUE INDEX idx_product_name ON aulu0471.product (name);
+CREATE UNIQUE INDEX idx_category_name ON aulu0471.category (name);
+CREATE UNIQUE INDEX idx_warehouse_address ON aulu0471.warehouse (address);
+CREATE UNIQUE INDEX idx_supplier_contact_info ON aulu0471.supplier (phone_number, email); 
 
-CREATE INDEX idx_stock_quantity ON juja0400.product (stock_quantity);
-CREATE INDEX idx_supplier_rating ON juja0400.supplier (rating);
-CREATE INDEX idx_product_price ON juja0400.product (price);
+CREATE INDEX idx_stock_quantity ON aulu0471.product (stock_quantity);
+CREATE INDEX idx_supplier_rating ON aulu0471.supplier (rating);
+CREATE INDEX idx_product_price ON aulu0471.product (price);
 
 -- Virtual Tables (Views)
 -- 1. Products with Low Stock (Stock < 10)
-CREATE VIEW juja0400.low_stock_products AS
+CREATE VIEW aulu0471.low_stock_products AS
 SELECT p.id, p.name, p.stock_quantity
-FROM juja0400.product p
+FROM aulu0471.product p
 WHERE p.stock_quantity < 10;
 
 -- 2. Suppliers by Rating (rating > 3.5)
-CREATE VIEW juja0400.suppliers_by_rating AS
+CREATE VIEW aulu0471.suppliers_by_rating AS
 SELECT s.id, s.name, s.rating, s.phone_number, s.email
-FROM juja0400.supplier s
+FROM aulu0471.supplier s
 WHERE s.rating > 3.5
 ORDER BY s.rating DESC;
 
 -- 3. Active Products (Stock > 0)
-CREATE VIEW juja0400.active_products AS
+CREATE VIEW aulu0471.active_products AS
 SELECT p.id, p.name, p.price, p.stock_quantity
-FROM juja0400.product p
+FROM aulu0471.product p
 WHERE p.stock_quantity > 0;
 
 -- 4. High Rated Suppliers (Rating >= 4.0)
-CREATE VIEW juja0400.high_rated_suppliers AS
+CREATE VIEW aulu0471.high_rated_suppliers AS
 SELECT s.id, s.name, s.rating
-FROM juja0400.supplier s
+FROM aulu0471.supplier s
 WHERE s.rating >= 4.0;
 
 -- 5. Low Stock Products in Warehouse (Stock < 10)
-CREATE VIEW juja0400.low_stock_products_in_warehouse AS
+CREATE VIEW aulu0471.low_stock_products_in_warehouse AS
 SELECT hp.warehouse_id, hp.product_id, p.name, p.stock_quantity
-FROM juja0400.has_product hp
-JOIN juja0400.product p ON hp.product_id = p.id
+FROM aulu0471.has_product hp
+JOIN aulu0471.product p ON hp.product_id = p.id
 WHERE p.stock_quantity < 10;
 
 -- 6. Lowest Delivery Price by Supplier
-CREATE VIEW juja0400.lowest_delivery_price AS
+CREATE VIEW aulu0471.lowest_delivery_price AS
 SELECT s.id, s.name, s.delivery_price, p.name AS product_name
-FROM juja0400.supplier s
-LEFT JOIN juja0400.product p ON s.product_id = p.id
-WHERE s.delivery_price = (SELECT MIN(delivery_price) FROM juja0400.supplier);
+FROM aulu0471.supplier s
+LEFT JOIN aulu0471.product p ON s.product_id = p.id
+WHERE s.delivery_price = (SELECT MIN(delivery_price) FROM aulu0471.supplier);
 
 -- Materialized View: Product stock Summary
-CREATE MATERIALIZED VIEW juja0400.product_stock_summary AS
+CREATE MATERIALIZED VIEW aulu0471.product_stock_summary AS
 SELECT p.id AS product_id, p.name AS product_name, p.stock_quantity, total_value AS stock_value
-FROM juja0400.product p
+FROM aulu0471.product p
 JOIN (
     SELECT id, SUM(stock_quantity * price) AS total_value
-    FROM juja0400.product
+    FROM aulu0471.product
     GROUP BY id
 ) AS stock_value ON p.id = stock_value.id;
 
 -- Refresh Command for Materialized View
-REFRESH MATERIALIZED VIEW juja0400.product_stock_summary;
+REFRESH MATERIALIZED VIEW aulu0471.product_stock_summary;
 
 -- Materialized View: Product Revenue from Last Week
-CREATE MATERIALIZED VIEW juja0400.all_product_revenue AS
+CREATE MATERIALIZED VIEW aulu0471.all_product_revenue AS
 SELECT p.id AS product_id, p.name AS product_name, SUM(po.price / 1.21) AS total_revenue
-FROM juja0400.places_order po
-JOIN juja0400.product p ON po.product_id = p.id
+FROM aulu0471.places_order po
+JOIN aulu0471.product p ON po.product_id = p.id
 WHERE po.date >= CURRENT_DATE - INTERVAL '7 days'
 GROUP BY p.id, p.name
 ORDER BY total_revenue DESC;
 
 -- Refresh Command for Materialized View
-REFRESH MATERIALIZED VIEW juja0400.all_product_revenue;
+REFRESH MATERIALIZED VIEW aulu0471.all_product_revenue;
 
 -- Triggers for Business Rules
 -- Rule 1: Prevent decreasing stock quantity below zero
@@ -289,18 +289,18 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_prevent_negative_stock
-BEFORE UPDATE ON juja0400.has_product
+BEFORE UPDATE ON aulu0471.has_product
 FOR EACH ROW EXECUTE FUNCTION prevent_negative_stock();
 
 -- Rule 2: Automatically update organization's warehouse count
 CREATE OR REPLACE FUNCTION update_warehouse_count() RETURNS TRIGGER AS $$
 BEGIN
     IF TG_OP = 'INSERT' THEN
-        UPDATE juja0400.organization
+        UPDATE aulu0471.organization
         SET warehouse_count = warehouse_count + 1
         WHERE id = NEW.organization_id;
     ELSIF TG_OP = 'DELETE' THEN
-        UPDATE juja0400.organization
+        UPDATE aulu0471.organization
         SET warehouse_count = warehouse_count - 1
         WHERE id = OLD.organization_id;
     END IF;
@@ -309,14 +309,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_update_warehouse_count
-AFTER INSERT OR DELETE ON juja0400.warehouse
+AFTER INSERT OR DELETE ON aulu0471.warehouse
 FOR EACH ROW EXECUTE FUNCTION update_warehouse_count();
 
 -- Rule 3: Log Price Change (trigger when product price is updated)
 CREATE OR REPLACE FUNCTION log_price_change() RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.price <> OLD.price THEN
-        INSERT INTO juja0400.price_change_log (product_id, old_price, new_price)
+        INSERT INTO aulu0471.price_change_log (product_id, old_price, new_price)
         VALUES (NEW.id, OLD.price, NEW.price);
     END IF;
     RETURN NEW;
@@ -324,16 +324,16 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_log_price_change
-AFTER UPDATE ON juja0400.product
+AFTER UPDATE ON aulu0471.product
 FOR EACH ROW EXECUTE FUNCTION log_price_change();
 
 -- Rule 4: Update customer order count (trigger when new order is placed)
 CREATE OR REPLACE FUNCTION update_order_count() RETURNS TRIGGER AS $$
 BEGIN
-    UPDATE juja0400.customer
+    UPDATE aulu0471.customer
     SET order_count = (
         SELECT COUNT(*)
-        FROM juja0400.places_order
+        FROM aulu0471.places_order
         WHERE customer_id = NEW.customer_id
     )
     WHERE contact_info = NEW.customer_id;
@@ -342,14 +342,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_update_order_count
-AFTER INSERT OR UPDATE ON juja0400.places_order
+AFTER INSERT OR UPDATE ON aulu0471.places_order
 FOR EACH ROW EXECUTE FUNCTION update_order_count();
 
 -- Rule 5: Stock Replenishment Alert (trigger when stock falls below 10)
 CREATE OR REPLACE FUNCTION stock_replenishment_alert() RETURNS TRIGGER AS $$
 BEGIN
     IF NEW.stock_quantity < 10 THEN
-        INSERT INTO juja0400.stock_alert (product_id, alert_message)
+        INSERT INTO aulu0471.stock_alert (product_id, alert_message)
         VALUES (NEW.product_id, 'Stock is below 10, consider replenishing.');
     END IF;
     RETURN NEW;
@@ -357,10 +357,10 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_stock_replenishment_alert
-AFTER UPDATE ON juja0400.has_product
+AFTER UPDATE ON aulu0471.has_product
 FOR EACH ROW EXECUTE FUNCTION stock_replenishment_alert();
 
--- DROP TRIGGER trg_stock_replenishment_alert ON juja0400.has_product;
+-- DROP TRIGGER trg_stock_replenishment_alert ON aulu0471.has_product;
 
 -- Rule 6: Calculate order revenue based on price, quantity and delivery price
 CREATE OR REPLACE FUNCTION calculate_order_price()
@@ -371,12 +371,12 @@ DECLARE
 BEGIN
     -- Get the product's price from the product table
     SELECT price INTO product_price
-    FROM juja0400.product
+    FROM aulu0471.product
     WHERE id = NEW.product_id;
 
    -- Get the smallest delivery price from the supplier table for the product
     SELECT COALESCE(MIN(delivery_price), 0) INTO min_delivery_price
-    FROM juja0400.supplier
+    FROM aulu0471.supplier
     WHERE product_id = NEW.product_id;
 
     -- Calculate the price for the places_order table
@@ -387,7 +387,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER set_order_price
-BEFORE INSERT ON juja0400.places_order
+BEFORE INSERT ON aulu0471.places_order
 FOR EACH ROW
 EXECUTE FUNCTION calculate_order_price();
 
@@ -400,7 +400,7 @@ DECLARE
 BEGIN
     -- Calculate the total stock for the ordered product across all warehouses
     SELECT SUM(stock_quantity) INTO total_stock
-    FROM juja0400.has_product
+    FROM aulu0471.has_product
     WHERE product_id = NEW.product_id;
 
     -- Check if there is enough stock
@@ -411,20 +411,20 @@ BEGIN
     -- Deduct the stock from the warehouses in order
     FOR warehouse IN
         SELECT warehouse_id, stock_quantity
-        FROM juja0400.has_product
+        FROM aulu0471.has_product
         WHERE product_id = NEW.product_id
         ORDER BY stock_quantity DESC -- Deduct from warehouses with more stock first
     LOOP
         IF warehouse.stock_quantity >= NEW.count THEN
             -- Deduct stock from this warehouse
-            UPDATE juja0400.has_product
+            UPDATE aulu0471.has_product
             SET stock_quantity = stock_quantity - NEW.count
             WHERE warehouse_id = warehouse.warehouse_id
             AND product_id = NEW.product_id;
             EXIT; -- Exit once stock is fulfilled
         ELSE
             -- Use all stock from this warehouse and continue to the next
-            UPDATE juja0400.has_product
+            UPDATE aulu0471.has_product
             SET stock_quantity = 0
             WHERE warehouse_id = warehouse.warehouse_id
             AND product_id = NEW.product_id;
@@ -433,7 +433,7 @@ BEGIN
     END LOOP;
 
     -- Update the product's total stock quantity
-    UPDATE juja0400.product
+    UPDATE aulu0471.product
     SET stock_quantity = stock_quantity - NEW.count
     WHERE id = NEW.product_id;
 
@@ -442,7 +442,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER before_place_order
-BEFORE INSERT ON juja0400.places_order
+BEFORE INSERT ON aulu0471.places_order
 FOR EACH ROW
 EXECUTE FUNCTION handle_order_stock();
 
@@ -458,13 +458,13 @@ BEGIN
     -- For each warehouse if has_product does not exist, insert with stock_quantity 0
     FOR warehouse IN
         SELECT id
-        FROM juja0400.warehouse
+        FROM aulu0471.warehouse
     LOOP
-        INSERT INTO juja0400.has_product (warehouse_id, product_id, stock_quantity)
+        INSERT INTO aulu0471.has_product (warehouse_id, product_id, stock_quantity)
         SELECT warehouse.id, NEW.id, 0
         WHERE NOT EXISTS (
             SELECT 1
-            FROM juja0400.has_product
+            FROM aulu0471.has_product
             WHERE warehouse_id = warehouse.id
             AND product_id = NEW.id
         );
@@ -472,7 +472,7 @@ BEGIN
 
     -- Count the number of warehouses storing this product
     SELECT COUNT(*) INTO warehouse_count
-    FROM juja0400.has_product
+    FROM aulu0471.has_product
     WHERE product_id = NEW.id;
 
     -- Calculate how much stock each warehouse should get
@@ -482,18 +482,18 @@ BEGIN
     -- Distribute stock across all warehouses
     FOR warehouse IN
         SELECT warehouse_id
-        FROM juja0400.has_product
+        FROM aulu0471.has_product
         WHERE product_id = NEW.id
     LOOP
         -- Allocate base stock to each warehouse
-        INSERT INTO juja0400.has_product (warehouse_id, product_id, stock_quantity)
+        INSERT INTO aulu0471.has_product (warehouse_id, product_id, stock_quantity)
         VALUES (warehouse.warehouse_id, NEW.id, base_allocation)
         ON CONFLICT (warehouse_id, product_id) DO UPDATE
-        SET stock_quantity = juja0400.has_product.stock_quantity + EXCLUDED.stock_quantity;
+        SET stock_quantity = aulu0471.has_product.stock_quantity + EXCLUDED.stock_quantity;
 
         -- Distribute remaining stock to the first few warehouses
         IF remaining_stock > 0 THEN
-            UPDATE juja0400.has_product
+            UPDATE aulu0471.has_product
             SET stock_quantity = stock_quantity + 1
             WHERE warehouse_id = warehouse.warehouse_id
             AND product_id = NEW.id;
@@ -506,7 +506,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER after_replenish_stock
-AFTER INSERT OR UPDATE ON juja0400.product
+AFTER INSERT ON aulu0471.product
 FOR EACH ROW
 EXECUTE FUNCTION replenish_stock();
 
@@ -516,7 +516,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
-        FROM juja0400.product
+        FROM aulu0471.product
         WHERE id = NEW.product_id
     ) THEN
         RAISE EXCEPTION 'Product with ID % does not exist', NEW.product_id;
@@ -526,7 +526,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_product_exists
-BEFORE INSERT ON juja0400.specification
+BEFORE INSERT ON aulu0471.specification
 FOR EACH ROW
 EXECUTE FUNCTION check_product_exists();
 
@@ -536,7 +536,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
-        FROM juja0400.warehouse
+        FROM aulu0471.warehouse
         WHERE address = NEW.warehouse_id
     ) THEN
         RAISE EXCEPTION 'Warehouse with ID % does not exist', NEW.warehouse_id;
@@ -546,7 +546,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_warehouse_exists
-BEFORE INSERT ON juja0400.employee
+BEFORE INSERT ON aulu0471.employee
 FOR EACH ROW
 EXECUTE FUNCTION check_warehouse_exists();
 
@@ -560,7 +560,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER before_insert_customer
-BEFORE INSERT ON juja0400.customer
+BEFORE INSERT ON aulu0471.customer
 FOR EACH ROW
 EXECUTE FUNCTION set_order_count_to_zero();
 
@@ -568,14 +568,14 @@ EXECUTE FUNCTION set_order_count_to_zero();
 CREATE OR REPLACE FUNCTION refresh_materialized_views()
 RETURNS TRIGGER AS $$
 BEGIN
-    REFRESH MATERIALIZED VIEW juja0400.product_stock_summary;
-    REFRESH MATERIALIZED VIEW juja0400.all_product_revenue;
+    REFRESH MATERIALIZED VIEW aulu0471.product_stock_summary;
+    REFRESH MATERIALIZED VIEW aulu0471.all_product_revenue;
     RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER refresh_materialized_views
-AFTER INSERT OR UPDATE ON juja0400.places_order
+AFTER INSERT OR UPDATE ON aulu0471.places_order
 FOR EACH STATEMENT
 EXECUTE FUNCTION refresh_materialized_views();
 
@@ -583,7 +583,7 @@ EXECUTE FUNCTION refresh_materialized_views();
 CREATE OR REPLACE FUNCTION check_order_stock()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.count > (SELECT stock_quantity FROM juja0400.product WHERE id = NEW.product_id) THEN
+    IF NEW.count > (SELECT stock_quantity FROM aulu0471.product WHERE id = NEW.product_id) THEN
         RAISE EXCEPTION 'Not enough stock for product ID %', NEW.product_id;
     END IF;
 
@@ -592,7 +592,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_order_stock
-BEFORE INSERT ON juja0400.places_order
+BEFORE INSERT ON aulu0471.places_order
 FOR EACH ROW
 EXECUTE FUNCTION check_order_stock();
 
@@ -601,7 +601,7 @@ EXECUTE FUNCTION check_order_stock();
 CREATE OR REPLACE FUNCTION check_min_price()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.price < (SELECT MIN(delivery_price) FROM juja0400.supplier WHERE product_id = NEW.id) THEN
+    IF NEW.price < (SELECT MIN(delivery_price) FROM aulu0471.supplier WHERE product_id = NEW.id) THEN
         RAISE EXCEPTION 'New price cannot be lower than the supplier delivery price';
     END IF;
 
@@ -610,7 +610,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_min_price
-BEFORE UPDATE OF price ON juja0400.product
+BEFORE UPDATE OF price ON aulu0471.product
 FOR EACH ROW
 EXECUTE FUNCTION check_min_price();
 
@@ -620,7 +620,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF EXISTS (
         SELECT 1 
-        FROM juja0400.product 
+        FROM aulu0471.product 
         WHERE name = NEW.name AND category_id = NEW.category_id AND id != NEW.id
     ) THEN
         RAISE EXCEPTION 'Duplicate product name % in category ID %', NEW.name, NEW.category_id;
@@ -631,7 +631,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_unique_product_name
-BEFORE INSERT OR UPDATE ON juja0400.product
+BEFORE INSERT OR UPDATE ON aulu0471.product
 FOR EACH ROW
 EXECUTE FUNCTION check_unique_product_name();
 
@@ -648,7 +648,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_check_valid_email
-BEFORE INSERT OR UPDATE ON juja0400.supplier
+BEFORE INSERT OR UPDATE ON aulu0471.supplier
 FOR EACH ROW
 EXECUTE FUNCTION check_valid_email();
 
@@ -656,18 +656,18 @@ EXECUTE FUNCTION check_valid_email();
 CREATE OR REPLACE FUNCTION before_delete_product()
 RETURNS TRIGGER AS $$
 BEGIN
-    DELETE FROM juja0400.specification WHERE product_id = OLD.id;
-    DELETE FROM juja0400.supplier WHERE product_id = OLD.id;
-    DELETE FROM juja0400.places_order WHERE product_id = OLD.id;
-    DELETE FROM juja0400.has_product WHERE product_id = OLD.id;
-    DELETE FROM juja0400.price_change_log WHERE product_id = OLD.id;
-    DELETE FROM juja0400.stock_alert WHERE product_id = OLD.id;
+    DELETE FROM aulu0471.specification WHERE product_id = OLD.id;
+    DELETE FROM aulu0471.supplier WHERE product_id = OLD.id;
+    DELETE FROM aulu0471.places_order WHERE product_id = OLD.id;
+    DELETE FROM aulu0471.has_product WHERE product_id = OLD.id;
+    DELETE FROM aulu0471.price_change_log WHERE product_id = OLD.id;
+    DELETE FROM aulu0471.stock_alert WHERE product_id = OLD.id;
     RETURN OLD;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER before_delete_product
-BEFORE DELETE ON juja0400.product
+BEFORE DELETE ON aulu0471.product
 FOR EACH ROW
 EXECUTE FUNCTION before_delete_product();
 
@@ -686,7 +686,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_prevent_pk_update
-BEFORE UPDATE ON juja0400.product
+BEFORE UPDATE ON aulu0471.product
 FOR EACH ROW
 EXECUTE FUNCTION prevent_pk_update();
 
@@ -696,7 +696,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
-        FROM juja0400.warehouse
+        FROM aulu0471.warehouse
         WHERE address = NEW.warehouse_id
     ) THEN
         RAISE EXCEPTION 'Warehouse_id % does not exist', NEW.warehouse_id;
@@ -706,7 +706,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_validate_warehouse_assignment
-BEFORE INSERT OR UPDATE ON juja0400.employee
+BEFORE INSERT OR UPDATE ON aulu0471.employee
 FOR EACH ROW EXECUTE FUNCTION validate_warehouse_assignment();
 
 -- Rule 22: Prevent ordering inactive products
@@ -715,7 +715,7 @@ RETURNS TRIGGER AS $$
 BEGIN
     IF NOT EXISTS (
         SELECT 1
-        FROM juja0400.product
+        FROM aulu0471.product
         WHERE id = NEW.product_id AND stock_quantity > 0
     ) THEN
         RAISE EXCEPTION 'Cannot order inactive product_id: %', NEW.product_id;
@@ -725,21 +725,21 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trg_prevent_inactive_product_orders
-BEFORE INSERT OR UPDATE ON juja0400.places_order
+BEFORE INSERT OR UPDATE ON aulu0471.places_order
 FOR EACH ROW EXECUTE FUNCTION prevent_inactive_product_orders();
 
 
 
 -- Insert test data for Organization Table
-INSERT INTO juja0400.organization DEFAULT VALUES;
+INSERT INTO aulu0471.organization DEFAULT VALUES;
 -- Insert test data for Warehouse Table
-INSERT INTO juja0400.warehouse (address, organization_id) VALUES
+INSERT INTO aulu0471.warehouse (address, organization_id) VALUES
 ('123 Main St', 1),
 ('456 Elm St', 1),
 ('789 Oak St', 1);
 
 -- Insert test data for Category Table
-INSERT INTO juja0400.category (name, description) VALUES
+INSERT INTO aulu0471.category (name, description) VALUES
 ('CPU', 'Central Processing Unit'),
 ('GPU', 'Graphics Processing Unit'),
 ('Motherboard', 'Main circuit board'),
@@ -758,7 +758,7 @@ INSERT INTO juja0400.category (name, description) VALUES
 
 
 -- Insert test data for Product Table
-INSERT INTO juja0400.product (category_id, name, description, price, stock_quantity) VALUES
+INSERT INTO aulu0471.product (category_id, name, description, price, stock_quantity) VALUES
 (1, 'AMD Ryzen 9 7950X', '16 cores / 32 threads / 5.7 GHz boost. Zen 4 architecture.', 465.00, 15),
 (1, 'Intel Core i5-14600K', '14 cores (6P + 8E) / 5.3 GHz boost. Excellent gaming and productivity.', 319.00, 30),
 (1, 'AMD Ryzen 7 7700X', '8 cores / 16 threads / 4.5 GHz base clock. Great for AM5 gaming.', 259.00, 25),
@@ -822,13 +822,13 @@ INSERT INTO juja0400.product (category_id, name, description, price, stock_quant
 (15, 'Dell X540-T2', 'Dual-port 10Gbps Ethernet card for server and workstation connectivity.', 249.99, 20);
 
 -- Insert test data for Supplier Table
-INSERT INTO juja0400.supplier (phone_number, email, name, rating, address, product_id, delivery_price) VALUES
+INSERT INTO aulu0471.supplier (phone_number, email, name, rating, address, product_id, delivery_price) VALUES
 ('8686865568','supplier1@example.com', 'Supplier One', 4.5, '123 Supplier St', 1, 2.78),
 ('8686868686','supplier2@example.com', 'Supplier Two', 3.8, '456 Supplier St', 2, 5.15),
 ('6581898455','supplier3@example.com', 'Supplier Three', 4.5, '1233 Supplier St', 3, 3.17),
 ('6546588155','supplier4@example.com', 'Supplier Four', 3.8, '4526 Supplier St', 4, 1.99);
 
-INSERT INTO juja0400.specification (name, description, value, product_id) VALUES
+INSERT INTO aulu0471.specification (name, description, value, product_id) VALUES
 ('Cores', 'Number of processor cores', '16 cores (8P + 8E)', 1),
 ('Base Clock', 'Base clock speed', '3.2 GHz', 1),
 ('Boost Clock', 'Boost clock speed', '5.2 GHz', 1),
@@ -1068,14 +1068,14 @@ INSERT INTO juja0400.specification (name, description, value, product_id) VALUES
 ('Latency', 'Network card latency', 'Low', 60);
 
 -- Insert test data for Employee Table
-INSERT INTO juja0400.employee (position, years_of_experience, contact_info, warehouse_id, first_name, last_name) VALUES
+INSERT INTO aulu0471.employee (position, years_of_experience, contact_info, warehouse_id, first_name, last_name) VALUES
 ('Manager', 5, 'manager@example.com', '123 Main St', 'John', 'Doe'),
 ('Worker', 2, 'worker@example.com', '456 Elm St', 'Jane', 'Smith'),
 ('Worker', 2, 'worker2@example.com', '789 Oak St', 'Alice', 'Johnson'),
 ('Manager', 3, 'manager2@example.com', '789 Oak St', 'Bob', 'Williams');
 
 -- Insert test data for Customer Table
-INSERT INTO juja0400.customer (contact_info, first_name, last_name) VALUES
+INSERT INTO aulu0471.customer (contact_info, first_name, last_name) VALUES
 ('customer1@example.com', 'Alice', 'Johnson'),
 ('customer2@example.com', 'Bob', 'Williams'),
 ('customer3@example.com', 'Charlie', 'Brown'),
@@ -1085,7 +1085,7 @@ INSERT INTO juja0400.customer (contact_info, first_name, last_name) VALUES
 ('customer7@example.com', 'Grace', 'Lee');
 
 -- Insert test data for Places Order Table
-INSERT INTO juja0400.places_order (customer_id, product_id, count) VALUES
+INSERT INTO aulu0471.places_order (customer_id, product_id, count) VALUES
 ('customer1@example.com', 3, 3),
 ('customer1@example.com', 4, 4),
 ('customer3@example.com', 10, 5),
@@ -1100,27 +1100,27 @@ INSERT INTO juja0400.places_order (customer_id, product_id, count) VALUES
 ('customer6@example.com', 10, 5);
 
 -- Insert test data for Price Change Log Table
--- INSERT INTO juja0400.price_change_log (product_id, old_price, new_price) VALUES
+-- INSERT INTO aulu0471.price_change_log (product_id, old_price, new_price) VALUES
 -- (1, 299.99, 589.99),
 -- (2, 199.99, 465.00),
 -- (16, 79.99, 220.54);
 
 -- Test for price change log.
-UPDATE juja0400.product
+UPDATE aulu0471.product
 SET price = 23.12
 WHERE id = 2;
 
 
 -- Insert test data for Stock Alert Table
-INSERT INTO juja0400.stock_alert (product_id, alert_message) VALUES
+INSERT INTO aulu0471.stock_alert (product_id, alert_message) VALUES
 (1, 'Stock is below 10, consider replenishing.'),
 (7, 'Stock is below 10, consider replenishing.'),
 (32, 'Stock is below 10, consider replenishing.');
 
 -- Update test data for Product Table.
-UPDATE juja0400.product
+UPDATE aulu0471.product
 SET stock_quantity = 10
 WHERE id = 1;
 
 -- Delete test data for Product Table.
-DELETE FROM juja0400.product WHERE id = 1;
+DELETE FROM aulu0471.product WHERE id = 1;
