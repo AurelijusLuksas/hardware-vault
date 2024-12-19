@@ -41,6 +41,7 @@ void searchEmployee() {
             std::cout << "Darbo vieta: " << c_warehouse << std::endl;
             std::cout << "Vardas: " << c_first_name << std::endl;
             std::cout << "Pavarde: " << c_last_name << std::endl;
+            std::cout << "-------------------\n";
         }
     }
     EXEC SQL CLOSE employee_cursor;
@@ -75,6 +76,7 @@ void searchProductSpecification(int id) {
             break;
         } else {
             std::cout << "Specifikacija: " << c_name << " " << c_description << " " << c_value << std::endl;
+            std::cout << "-------------------\n";
         }
     }
     EXEC SQL CLOSE product_specification_cursor;
@@ -151,6 +153,7 @@ void searchProduct() {
             std::cout << "Kaina: " << c_price << std::endl;
             std::cout << "Kiekis: " << c_stock_quantity << std::endl;
             searchProductSpecification(c_id);
+            std::cout << "-------------------\n";
             break;
         }
     }
@@ -194,6 +197,7 @@ void searchOrder() {
             std::cout << "Uzsakymo kaina: " << c_price << std::endl;
             std::cout << "Uzsakymo data: " << c_date << std::endl;
             std::cout << "Uzsakyto produkto kiekis: " << c_quantity << std::endl;
+            std::cout << "-------------------\n";
             break;
         }
     }
@@ -230,6 +234,7 @@ void searchProductSpecification() {
             break;
         } else {
             std::cout << "Specifikacija: " << c_name << " " << c_description << " " << c_value << std::endl;
+            std::cout << "-------------------\n";
             break;
         }
     }
@@ -272,6 +277,7 @@ void searchProductsOfCategory() {
             std::cout << "Produktas:\n";
             std::cout << "ID: " << c_id << std::endl;
             std::cout << "Pavadinimas: " << c_name << std::endl;
+            std::cout << "-------------------\n";
         }
     }
     EXEC SQL CLOSE product_category;
@@ -318,6 +324,7 @@ void searchProductSupplier() {
             std::cout << "Adresas: " << c_address << std::endl;
             std::cout << "Produkto ID: " << c_product_id << std::endl;
             std::cout << "Pristatymo kaina: " << c_delivery_price << std::endl;
+            std::cout << "-------------------\n";
         }
     }
     EXEC SQL CLOSE supplier_cursor;
@@ -361,6 +368,7 @@ void searchProductWarehouse() {
             std::cout << "Sandelio ID: " << c_warehouse_id << std::endl;
             std::cout << "Kiekis: " << c_stock_quantity << std::endl;
             std::cout << "Organizacijos ID: " << c_organization_id << std::endl;
+            std::cout << "-------------------\n";
         }
     }
     EXEC SQL CLOSE product_warehouse_cursor;    
@@ -402,6 +410,7 @@ void searchCustomerOrders() {
             std::cout << "Kaina: " << c_price << std::endl;
             std::cout << "Data: " << c_date << std::endl;
             std::cout << "Kiekis: " << c_count << std::endl;
+            std::cout << "-------------------\n";
         }
     }
     EXEC SQL CLOSE customer_orders_cursor;
