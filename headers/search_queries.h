@@ -7,5 +7,8 @@ void searchProduct();
 void searchOrder();
 void searchProductSpecification();
 void searchProductsOfCategory();
+void searchProductSupplier();
+void searchProductWarehouse();
+void searchCustomerOrders();
 
 #endif // QUERIES_H
