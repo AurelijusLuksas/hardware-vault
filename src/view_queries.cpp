@@ -22,14 +22,14 @@ void viewLowStockProducts() {
         if (SQLCODE != 0) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
-            std::cout << "Klaida gaunant mažo atsargų kiekio produktus\n";
+            std::cout << "Klaida gaunant mazo atsargu kiekio produktus\n";
             EXEC SQL ROLLBACK;
             break;
         } else {
             std::cout << "Produktas:\n";
             std::cout << "ID: " << c_id << std::endl;
             std::cout << "Pavadinimas: " << c_name << std::endl;
-            std::cout << "Atsargų kiekis: " << c_stock_quantity << std::endl;
+            std::cout << "Atsargu kiekis: " << c_stock_quantity << std::endl;
         }
     }
     EXEC SQL CLOSE low_stock_cursor;
@@ -57,16 +57,16 @@ void viewSuppliersByRating() {
         if (SQLCODE != 0) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
-            std::cout << "Klaida gaunant tiekėjus pagal reitingą\n";
+            std::cout << "Klaida gaunant tiekejus pagal reitinga\n";
             EXEC SQL ROLLBACK;
             break;
         } else {
-            std::cout << "Tiekėjas:\n";
+            std::cout << "Tiekejas:\n";
             std::cout << "ID: " << c_id << std::endl;
             std::cout << "Pavadinimas: " << c_name << std::endl;
             std::cout << "Reitingas: " << c_rating << std::endl;
             std::cout << "Telefono numeris: " << c_phone_number << std::endl;
-            std::cout << "El. paštas: " << c_email << std::endl;
+            std::cout << "El. pastas: " << c_email << std::endl;
         }
     }
     EXEC SQL CLOSE suppliers_rating_cursor;
@@ -101,7 +101,7 @@ void viewActiveProducts() {
             std::cout << "ID: " << c_id << std::endl;
             std::cout << "Pavadinimas: " << c_name << std::endl;
             std::cout << "Kaina: " << c_price << std::endl;
-            std::cout << "Atsargų kiekis: " << c_stock_quantity << std::endl;
+            std::cout << "Atsargu kiekis: " << c_stock_quantity << std::endl;
         }
     }
     EXEC SQL CLOSE active_products_cursor;
@@ -127,11 +127,11 @@ void viewHighRatedSuppliers() {
         if (SQLCODE != 0) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
-            std::cout << "Klaida gaunant aukštai įvertintus tiekėjus\n";
+            std::cout << "Klaida gaunant aukstai ivertintus tiekejus\n";
             EXEC SQL ROLLBACK;
             break;
         } else {
-            std::cout << "Tiekėjas:\n";
+            std::cout << "Tiekejas:\n";
             std::cout << "ID: " << c_id << std::endl;
             std::cout << "Pavadinimas: " << c_name << std::endl;
             std::cout << "Reitingas: " << c_rating << std::endl;
@@ -161,15 +161,15 @@ void viewLowStockProductsInWarehouse() {
         if (SQLCODE != 0) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
-            std::cout << "Klaida gaunant mažo atsargų kiekio produktus sandėlyje\n";
+            std::cout << "Klaida gaunant mazo atsargu kiekio produktus sandelyje\n";
             EXEC SQL ROLLBACK;
             break;
         } else {
-            std::cout << "Produktas sandėlyje:\n";
-            std::cout << "Sandėlio ID: " << c_warehouse_id << std::endl;
+            std::cout << "Produktas sandelyje:\n";
+            std::cout << "Sandelio ID: " << c_warehouse_id << std::endl;
             std::cout << "Produkto ID: " << c_product_id << std::endl;
             std::cout << "Pavadinimas: " << c_name << std::endl;
-            std::cout << "Atsargų kiekis: " << c_stock_quantity << std::endl;
+            std::cout << "Atsargu kiekis: " << c_stock_quantity << std::endl;
         }
     }
     EXEC SQL CLOSE low_stock_warehouse_cursor;
@@ -196,11 +196,11 @@ void viewLowestDeliveryPrice() {
         if (SQLCODE != 0) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
-            std::cout << "Klaida gaunant mažiausią pristatymo kainą\n";
+            std::cout << "Klaida gaunant maziausia pristatymo kaina\n";
             EXEC SQL ROLLBACK;
             break;
         } else {
-            std::cout << "Tiekėjas:\n";
+            std::cout << "Tiekejas:\n";
             std::cout << "ID: " << c_id << std::endl;
             std::cout << "Pavadinimas: " << c_name << std::endl;
             std::cout << "Pristatymo kaina: " << c_delivery_price << std::endl;
@@ -231,15 +231,15 @@ void viewProductStockSummary() {
         if (SQLCODE != 0) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
-            std::cout << "Klaida gaunant produktų atsargų suvestinę\n";
+            std::cout << "Klaida gaunant produktu atsargu suvestine\n";
             EXEC SQL ROLLBACK;
             break;
         } else {
-            std::cout << "Produkto atsargų suvestinė:\n";
+            std::cout << "Produkto atsargu suvestine:\n";
             std::cout << "Produkto ID: " << c_product_id << std::endl;
             std::cout << "Produkto pavadinimas: " << c_product_name << std::endl;
-            std::cout << "Atsargų kiekis: " << c_stock_quantity << std::endl;
-            std::cout << "Atsargų vertė: " << c_stock_value << std::endl;
+            std::cout << "Atsargu kiekis: " << c_stock_quantity << std::endl;
+            std::cout << "Atsargu verte: " << c_stock_value << std::endl;
         }
     }
     EXEC SQL CLOSE product_stock_summary_cursor;
@@ -265,11 +265,11 @@ void viewProductRevenueLastWeek() {
         if (SQLCODE != 0) {
             std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
             std::print("{}", sqlca.sqlerrm.sqlerrmc);
-            std::cout << "Klaida gaunant produktų pajamas per praėjusią savaitę\n";
+            std::cout << "Klaida gaunant produktu pajamas per praejusia savaite\n";
             EXEC SQL ROLLBACK;
             break;
         } else {
-            std::cout << "Produkto pajamos per praėjusią savaitę:\n";
+            std::cout << "Produkto pajamos per praejusia savaite:\n";
             std::cout << "Produkto ID: " << c_product_id << std::endl;
             std::cout << "Produkto pavadinimas: " << c_product_name << std::endl;
             std::cout << "Bendros pajamos: " << c_total_revenue << std::endl;
