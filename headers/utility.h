@@ -12,5 +12,7 @@ void copyStr(const std::string &str, char* c_str, size_t size);
 void printCategory();
 void printProduct();
 void printWarehouse();
+void printCustomer();
+void printEmployee();
 
 #endif // UTILITY H

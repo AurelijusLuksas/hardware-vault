@@ -190,3 +190,67 @@ void printWarehouse() {
 
     EXEC SQL CLOSE warehouse_cursor;
 }
+
+void printCustomer() {
+    std::cout << "Galimi klientai:\n";
+
+    EXEC SQL BEGIN DECLARE SECTION;
+    int customer_id;
+    int order_count;
+    char contact_info[255];
+    char first_name[100];
+    char last_name[100];
+    EXEC SQL END DECLARE SECTION;
+
+    EXEC SQL DECLARE customer_cursor CURSOR FOR
+        SELECT id, order_count, contact_info, first_name, last_name FROM customer;
+
+    EXEC SQL OPEN customer_cursor;
+    
+    while(true) {
+        EXEC SQL FETCH customer_cursor INTO :customer_id, :order_count, :contact_info, :first_name, :last_name;
+        if (SQLCODE == 100) { // No more data
+            break;
+        } else if (SQLCODE != 0) { // Error
+            std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
+            std::print("{}", sqlca.sqlerrm.sqlerrmc);
+            std::cout << "Klaida gaunant klientus\n";
+            break;
+        }
+        printf("%d. %d - %s - %s - %s\n", customer_id, order_count, contact_info, first_name, last_name);
+    }
+
+    EXEC SQL CLOSE customer_cursor;
+}
+
+void printEmployee() {
+    std::cout << "Galimi darbuotojai:\n";
+
+    EXEC SQL BEGIN DECLARE SECTION;
+    int employee_id;
+    char position[100];
+    int years_of_experience;
+    char contact_info[255];
+    char warehouse_id[100];
+    char first_name[100];
+    char last_name[100];
+    EXEC SQL END DECLARE SECTION;
+
+    EXEC SQL DECLARE employee_cursor CURSOR FOR
+        SELECT id, position, years_of_experience, contact_info, warehouse_id, first_name, last_name FROM employee;
+
+    EXEC SQL OPEN employee_cursor;
+
+    while(true) {
+        EXEC SQL FETCH employee_cursor INTO :employee_id, :position, :years_of_experience, :contact_info, :warehouse_id, :first_name, :last_name;
+        if (SQLCODE == 100) { // No more data
+            break;
+        } else if (SQLCODE != 0) { // Error
+            std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
+            std::print("{}", sqlca.sqlerrm.sqlerrmc);
+            std::cout << "Klaida gaunant darbuotojus\n";
+            break;
+        }
+        printf("%d. %s - %d - %s - %s - %s - %s\n", employee_id, position, years_of_experience, contact_info, warehouse_id, first_name, last_name);
+    }
+}

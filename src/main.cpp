@@ -6,6 +6,7 @@
 #include <sstream>
 #include "add_queries.h"
 #include "search_queries.h"
+#include "remove_queries.h"
 
 #define MAX_PASSWORD_LENGTH 100
 
@@ -101,23 +102,18 @@ int main() {
 
                     switch (choiceFind) {
                         case 1:
-                            std::cout << "Rasti darbuotoja\n";
                             searchEmployee();
                             break;
                         case 2:
-                            std::cout << "Rasti produkta\n";
                             searchProduct();
                             break;
                         case 3:
-                            std::cout << "Rasti uzsakyma\n";
                             searchOrder();
                             break;
                         case 4:
-                            std::cout << "Rasti produkto specifikacija\n";
                             searchProductSpecification();
                             break;
                         case 5:
-                            std::cout << "Rasti kategorijos produktus\n";
                             searchProductsOfCategory();
                             break;
                         case 6:
@@ -253,7 +249,50 @@ int main() {
 
                 break;
             case 4:
-                std::cout << "Duomenu trynimas\n";
+                std::cout << "Duomenu trinimas\n";
+                while (true) {
+                    std::cout << "-------------------\n";
+                    std::cout << "[1] Istrinti produkta\n";
+                    std::cout << "[2] Istrinti kategorija\n";
+                    std::cout << "[3] Istrinti klienta\n";
+                    std::cout << "[4] Istrinti uzsakyma\n";
+                    std::cout << "[5] Istrinti sandeli\n";
+                    std::cout << "[6] Istrinti darbuotoja\n";
+                    std::cout << "[0] Grizti\n";
+
+                    int choiceAdd;
+                    std::cin >> choiceAdd;
+
+                    switch (choiceAdd) {
+                        case 1:
+                            removeProduct();
+                            break;
+                        case 2:
+                            removeCategory();
+                            break;
+                        case 3:
+                            removeCustomer();
+                            break;
+                        case 4:
+                            removeOrder();
+                            break;
+                        case 5:
+                            removeWarehouse();
+                            break;
+                        case 6:
+                            removeEmployee();
+                            break;
+                        case 0:
+                            std::cout << "Grizti\n";
+                            break;
+                        default:
+                            std::cout << "Neteisingas pasirinkimas\n";
+                            break;
+                    }
+                    if (choiceAdd == 0) {
+                        break;
+                    }
+                }
                 break;
             case 0:
                 std::cout << "Isjungti\n";
