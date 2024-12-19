@@ -22,7 +22,6 @@ void removeProduct() {
         std::cout << "Klaida istrinant produkta\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }
 
@@ -45,7 +44,6 @@ void removeCategory() {
         std::cout << "Klaida istrinant kategorija\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }
 
@@ -68,7 +66,6 @@ void removeCustomer() {
         std::cout << "Klaida istrinant klienta\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }
 
@@ -117,7 +114,6 @@ void removeWarehouse() {
         std::cout << "Klaida istrinant sandeli\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }
 
@@ -139,6 +135,5 @@ void removeEmployee() {
         std::cout << "Klaida istrinant darbuotoja\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }

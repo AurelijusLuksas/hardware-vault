@@ -39,7 +39,6 @@ void addProduct() {
     } else {
         std::cout << "Klaida pridedant produkta\n";
         std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }
 
@@ -64,7 +63,6 @@ void addCategory() {
     } else {
         std::cout << "Klaida pridedant kategorija\n";
         std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }
 
@@ -91,7 +89,6 @@ void addCustomer() {
     } else {
         std::cout << "Klaida pridedant klienta\n";
         std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 
 }
@@ -120,7 +117,6 @@ void addOrder() {
         std::cout << "Klaida pridedant uzsakyma\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }
 void addWarehouse() {
@@ -143,7 +139,6 @@ void addWarehouse() {
     } else {
         std::cout << "Klaida pridedant sandeli\n";
         std::cout << "Klaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
     
 
@@ -182,7 +177,6 @@ void addEmployee() {
         std::cout << "Klaida pridedant darbuotoja\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 
 }
@@ -223,7 +217,6 @@ void addSupplier() {
         std::cout << "Klaida pridedant tiekeja\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 }
 
@@ -255,7 +248,6 @@ void addSpecification() {
         std::cout << "Klaida pridedant specifikacija\n";
         std::print("{}", sqlca.sqlerrm.sqlerrmc);
         std::cout << "\nKlaidos kodas: " << SQLCODE << std::endl;
-        EXEC SQL ROLLBACK;
     }
 
 }
