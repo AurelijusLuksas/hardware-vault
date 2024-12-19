@@ -75,18 +75,18 @@ void removeCustomer() {
 void removeOrder() {
     EXEC SQL BEGIN DECLARE SECTION;
     int c_product_id;
-    int c_customer_id;
+    char c_customer_id[255];
     EXEC SQL END DECLARE SECTION;
 
     printCustomer();
-    int customer_id = getInt("Iveskite kliento ID kurio uzsakyma norite istrinti: ");
+    std::string customer_id = getString("Iveskite kliento kontaktine info kurio uzsakyma norite istrinti: ");
     int product_id = getInt("Iveskite produkto ID kurio uzsakyma norite istrinti: ");
 
     c_product_id = product_id;
-    c_customer_id = customer_id;
+    copyStr(customer_id, c_customer_id, sizeof(c_customer_id));
 
-    EXEC SQL DELETE FROM palces_order WHERE product_id = :c_product_id AND customer_id = :c_customer_id;
-    EXEC SQL UPDATE customer SET order_count = order_count - 1 WHERE id = :c_customer_id;
+    EXEC SQL DELETE FROM places_order WHERE product_id = :c_product_id AND customer_id = :c_customer_id;
+    EXEC SQL UPDATE customer SET order_count = order_count - 1 WHERE contact_info = :c_customer_id;
     if (0 == SQLCODE) {
         EXEC SQL COMMIT;
         std::cout << "Uzsakymas istrintas\n";
