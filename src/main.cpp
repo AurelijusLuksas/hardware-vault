@@ -118,12 +118,15 @@ int main() {
                             break;
                         case 6:
                             std::cout << "Rasti produkto tiekejus\n";
+                            searchProductSupplier();
                             break;
                         case 7:
                             std::cout << "Rasti produkto kieki sandelyje\n";
+                            searchProductWarehouse();
                             break;
                         case 8:
                             std::cout << "Rasti kliento uzsakymus\n";
+                            searchCustomerOrders();
                             break;
                         case 0:
                             std::cout << "Grizti\n";

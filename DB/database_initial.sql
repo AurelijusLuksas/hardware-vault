@@ -34,6 +34,15 @@ DROP FUNCTION IF EXISTS replenish_stock();
 DROP FUNCTION IF EXISTS check_product_exists();
 DROP FUNCTION IF EXISTS check_warehouse_exists();
 DROP FUNCTION IF EXISTS set_order_count_to_zero();
+DROP FUNCTION IF EXISTS refresh_materialized_views();
+DROP FUNCTION IF EXISTS check_order_stock();
+DROP FUNCTION IF EXISTS check_min_price();
+DROP FUNCTION IF EXISTS check_unique_product_name();
+DROP FUNCTION IF EXISTS check_valid_email();
+DROP FUNCTION IF EXISTS before_delete_product();
+DROP FUNCTION IF EXISTS prevent_pk_update();
+DROP FUNCTION IF EXISTS validate_warehouse_assignment();
+DROP FUNCTION IF EXISTS prevent_inactive_product_orders();
 
 -- Drop Materialized Views
 DROP MATERIALIZED VIEW IF EXISTS juja0400.product_stock_summary;
