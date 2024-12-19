@@ -8,6 +8,7 @@
 #include "search_queries.h"
 #include "remove_queries.h"
 #include "update_queries.h"
+#include "view_queries.h"
 
 #define MAX_PASSWORD_LENGTH 100
 
@@ -51,6 +52,7 @@ int main() {
         std::cout << "[2] Duomenu ivedimas\n";
         std::cout << "[3] Duomenu atnaujinimas\n";
         std::cout << "[4] Duomenu trynimas\n";
+        std::cout << "[5] Duomenu perziurejimas\n";
         std::cout << "[0] Isjungti\n";
 
         int choice;
@@ -223,7 +225,7 @@ int main() {
 
                 break;
             case 4:
-                std::cout << "Duomenu trinimas\n";
+                std::cout << "Duomenu trynimas\n";
                 while (true) {
                     std::cout << "-------------------\n";
                     std::cout << "[1] Istrinti produkta\n";
@@ -264,6 +266,60 @@ int main() {
                             break;
                     }
                     if (choiceAdd == 0) {
+                        break;
+                    }
+                }
+                break;
+            case 5:
+                std::cout << "Duomenu perziurejimas\n";
+                while (true) {
+                    std::cout << "-------------------\n";
+                    std::cout << "[1] Produktai, kuriu yra mazai sandelyje\n";
+                    std::cout << "[2] Tiekejai pagal reitinga\n";
+                    std::cout << "[3] Aktyvus produktai\n";
+                    std::cout << "[4] Auksto reitingo tiekejai\n";
+                    std::cout << "[5] Produktai, kuriu mazai sandelyje\n";
+                    std::cout << "[6] Maziausia pristatymo kaina\n";
+                    std::cout << "[7] Produktu atsargu suvestine\n";
+                    std::cout << "[8] Produktu pajamos per paskutine savaite\n";
+                    std::cout << "[0] Grizti\n";
+
+                    int choiceView;
+                    std::cin >> choiceView;
+
+                    switch (choiceView) {
+                        case 1:
+                            viewLowStockProducts();
+                            break;
+                        case 2:
+                            viewSuppliersByRating();
+                            break;
+                        case 3:
+                            viewActiveProducts();
+                            break;
+                        case 4:
+                            viewHighRatedSuppliers();
+                            break;
+                        case 5:
+                            viewLowStockProductsInWarehouse();
+                            break;
+                        case 6:
+                            viewLowestDeliveryPrice();
+                            break;
+                        case 7:
+                            viewProductStockSummary();
+                            break;
+                        case 8:
+                            viewProductRevenueLastWeek();
+                            break;
+                        case 0:
+                            std::cout << "Grizti\n";
+                            break;
+                        default:
+                            std::cout << "Neteisingas pasirinkimas\n";
+                            break;
+                    }
+                    if (choiceView == 0) {
                         break;
                     }
                 }
