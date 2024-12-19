@@ -382,19 +382,21 @@ void searchCustomerOrders() {
     float c_price;
     char c_date[100];
     int c_count;
+    char c_product_name[100];
     EXEC SQL END DECLARE SECTION;
 
     std::string contact_info = getString("Iveskite kliento kontaktine informacija: ");
     copyStr(contact_info, c_contact_info, sizeof(c_contact_info));
 
     EXEC SQL DECLARE customer_orders_cursor CURSOR FOR
-
-    SELECT id, customer_id, product_id, price, date, count FROM places_order WHERE customer_id = :c_contact_info;
-
+    SELECT o.id, o.customer_id, o.product_id, o.price, o.date, o.count, p.name 
+    FROM places_order o
+    INNER JOIN product p ON o.product_id = p.id
+    WHERE o.customer_id = :c_contact_info;
     EXEC SQL OPEN customer_orders_cursor;
 
     while (true) {
-        EXEC SQL FETCH customer_orders_cursor INTO :c_order_id, :c_contact_info, :c_product_id, :c_price, :c_date, :c_count;
+        EXEC SQL FETCH customer_orders_cursor INTO :c_order_id, :c_contact_info, :c_product_id, :c_price, :c_date, :c_count, :c_product_name;
         if (SQLCODE == 100) {
             break;
         }
@@ -407,6 +409,7 @@ void searchCustomerOrders() {
             std::cout << "Uzsakymas:\n";
             std::cout << "ID: " << c_order_id << std::endl;
             std::cout << "Produkto ID: " << c_product_id << std::endl;
+            std::cout << "Produkto pavadinimas: " << c_product_name << std::endl;
             std::cout << "Kaina: " << c_price << std::endl;
             std::cout << "Data: " << c_date << std::endl;
             std::cout << "Kiekis: " << c_count << std::endl;

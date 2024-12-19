@@ -312,6 +312,7 @@ int main() {
                 break;
             case 0:
                 std::cout << "Isjungti\n";
+                EXEC SQL DISCONNECT;
                 return 0;
             default:
                 std::cout << "Neteisingas pasirinkimas\n";
