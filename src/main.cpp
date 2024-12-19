@@ -122,11 +122,11 @@ int main() {
                     std::cout << "[1] Prideti nauja produkta\n";
                     std::cout << "[2] Prideti nauja kategorija\n";
                     std::cout << "[3] Prideti nauja klienta\n";
-                    std::cout << "[4] Prideti nauja uzsakyma\n";
+                    std::cout << "[4] Uzsakyti\n";
                     std::cout << "[5] Prideti nauja sandeli\n";
-                    std::cout << "[6] Prideti nauja darbuotoja\n";
+                    std::cout << "[6] Pasamdyti darbuotoja\n";
                     std::cout << "[7] Prideti nauja tiekeja\n";
-                    std::cout << "[8] Prideti nauja specifikacija\n";
+                    std::cout << "[8] Sukurti specifikacija\n";
                     std::cout << "[0] Grizti\n";
 
                     int choiceAdd;
@@ -176,14 +176,9 @@ int main() {
                     std::cout << "-------------------\n";
                     std::cout << "[1] Pakeisti produkto kaina\n";
                     std::cout << "[2] Pakeisti produkto kieki\n";
-                    std::cout << "[3] Pakeisti produkto kieki uzsakyme\n";
-                    std::cout << "[4] Prideti produkta prie uzsakymo\n";
-                    std::cout << "[5] Ismesti darbuotojo is darbo\n";
-                    std::cout << "[6] Pakeisti vartotojo varda\n";
-                    std::cout << "[7] Pakeisti produkto specifikacija\n";
-                    std::cout << "[8] Pakeisti tiekejo pristatymo kaina\n";
-                    std::cout << "[9] Atnaujinti produktų atsargų suvestinę\n";
-                    std::cout << "[10] Atnaujinti produktų pajamas per paskutinę savaitę\n";
+                    // std::cout << "[3] Pakeisti produkto kieki uzsakyme\n";
+                    std::cout << "[3] Atnaujinti produktu atsargu suvestine\n";
+                    std::cout << "[4] Atnaujinti produktu pajamas per paskutine savaite\n";
                     std::cout << "[0] Grizti\n";
 
                     int choiceUpdate;
@@ -197,27 +192,9 @@ int main() {
                             updateProductQuantity(); // FIX warehouse stock wronk
                             break;
                         case 3:
-                            updateProductCountInOrder();
-                            break;
-                        case 4:
-                            std::cout << "Prideti nauja uzsakyma\n";
-                            break;
-                        case 5:
-                            std::cout << "Prideti nauja sandeli\n";
-                            break;
-                        case 6:
-                            std::cout << "Prideti nauja darbuotoja\n";
-                            break;
-                        case 7:
-                            std::cout << "Prideti nauja tiekeja\n";
-                            break;
-                        case 8:
-                            std::cout << "Prideti nauja specifikacija\n";
-                            break;
-                        case 9:
                             updateMaterializedProductStockSummary();
                             break;
-                        case 10:
+                        case 4:
                             updateMaterializedProductRevenueLastWeek();
                             break;
                         case 0:
@@ -240,9 +217,9 @@ int main() {
                     std::cout << "[1] Istrinti produkta\n";
                     std::cout << "[2] Istrinti kategorija\n";
                     std::cout << "[3] Istrinti klienta\n";
-                    std::cout << "[4] Istrinti uzsakyma\n";
-                    std::cout << "[5] Istrinti sandeli\n";
-                    std::cout << "[6] Istrinti darbuotoja\n";
+                    std::cout << "[4] Atsaukti uzsakyma\n";
+                    std::cout << "[5] Nugriauti sandeli\n";
+                    std::cout << "[6] Atleisti darbuotoja\n";
                     std::cout << "[0] Grizti\n";
 
                     int choiceAdd;
