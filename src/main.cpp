@@ -175,7 +175,7 @@ int main() {
                     std::cout << "[2] Pakeisti produkto kieki\n";
                     std::cout << "[3] Pakeisti pakeisti produkto kieki uzsakyme\n";
                     std::cout << "[4] Prideti produkta prie uzsakymo\n";
-                    std::cout << "[5] Ismesti produkta is darbo\n";
+                    std::cout << "[5] Ismesti darbuotojo is darbo\n";
                     std::cout << "[6] Pakeisti vartotojo varda\n";
                     std::cout << "[7] Pakeisti produkto specifikacija\n";
                     std::cout << "[8] Pakeisti tiekejo pristatymo kaina\n";
@@ -189,7 +189,7 @@ int main() {
                             updateProductPrice();
                             break;
                         case 2:
-                            std::cout << "Prideti nauja kategorija\n";
+                            updateProductQuantity(); // FIX warehouse stock wronk
                             break;
                         case 3:
                             std::cout << "Prideti nauja klienta\n";
